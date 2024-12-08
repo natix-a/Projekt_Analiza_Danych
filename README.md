@@ -26,9 +26,9 @@ data <- read.csv("agencja_nieruchomosci.csv")
 data
 View(data)
 # Podgląd danych
-head(dane)
+head(data)
 # Struktura danych
-str(dane)
+str(data)
 
 n_miss(data$price)
 n_miss(data$area)
