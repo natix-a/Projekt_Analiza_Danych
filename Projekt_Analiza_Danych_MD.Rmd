@@ -150,12 +150,6 @@ str(violations_summary)
 Z podsumowanie danych łamiących zapisaną wyżej regułę wynika, że większość wierszy (66.6%) w danych spełnia wszystkie reguły walidacyjne (errors = 0).
 28.4% wierszy narusza jedną regułę (errors = 1). 4.8% wierszy narusza dwie reguły (errors = 2). 0.2% wierszy narusza trzy reguły (errors = 3).
 
-```{r}
-
-```
-
-
-
 
 Wykres pokazujący jaka część danych zawiera błędy 
 ```{r}
@@ -163,6 +157,12 @@ plot(violated)
 ```
 
 Ustalenie obserwacji odstających dla zmiennej 'area'
+
+```{r}
+data$area[outliers_idx]
+```
+
+
 ```{r}
 outliers <- boxplot.stats(data$area)$out
 outliers_idx <- which(data$area %in% outliers)
@@ -176,6 +176,7 @@ summary(data)
 ```{r}
 boxplot(area ~ price, data=data)
 ```
+
 
 
 
