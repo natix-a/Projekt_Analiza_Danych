@@ -35,10 +35,12 @@ knitr::opts_chunk$set(cache = TRUE)
 
 
 ```{r}
+
 library(dplyr)
 library(naniar)
 library(ggplot2)
 library(VIM)
+library(editrules)
 ```
 
 
@@ -129,6 +131,48 @@ Wizualizacja brakujących wartości
 ```{r}
 vis_miss(data)
 ```
+
+Definiowanie reguł w celu zwiększenia spójności danych
+
+```{r}
+RULE <- editset(c("price > 0","area > 0", "bedrooms >= 1","bathrooms >= 1", "stories >= 1", "mainroad %in% c('yes','no')","guestroom %in% c('yes','no')", "basement %in% c('yes','no')", "hotwaterheating %in% c('yes','no')", "airconditioning %in% c('yes','no')", "prefarea %in% c('yes','no')", "parking >= 0", "furnishingstatus %in% c('furnished','semi-furnished','unfurnished')"))
+RULE
+```
+
+Podsumowanie wystepowania rekordów niespełniających ustalonej wyżej reguły 
+
+```{r}
+summary(violatedEdits(RULE, data))
+```
+
+Jaki procent danych nie zawiera błędów?
+
+```{r}
+violated <- violatedEdits(RULE, data)
+summary(violated)
+```
+
+Wykres pokazujący jaka część danych zawiera błędy 
+```{r}
+plot(violated)
+```
+
+Ustalenie obserwacji odstających dla zmiennej 'area'
+```{r}
+outliers <- boxplot.stats(data$area)$out
+outliers_idx <- which(data$area %in% outliers)
+data[outliers_idx,]
+```
+
+```{r}
+data[outliers_idx, 2] <- data[outliers_idx, 2] / 10
+summary(data)
+```
+```{r}
+boxplot(area ~ price, data=data)
+```
+
+
 
 Tabelę podsumowującą brakujące wartości według wiersza
 
