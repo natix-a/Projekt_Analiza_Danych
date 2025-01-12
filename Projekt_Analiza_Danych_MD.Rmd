@@ -50,6 +50,7 @@ data <- read.csv("agencja_nieruchomosci.csv")
 Podgląd danych
 
 ```{r}
+#Data preview
 head(data)
 ```
 
