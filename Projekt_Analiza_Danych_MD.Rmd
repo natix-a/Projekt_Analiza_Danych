@@ -1,4 +1,26 @@
-# Projekt_Analiza_Danych
+---
+title: "Untitled"
+output: html_document
+date: "2024-12-08"
+---
+
+
+---
+title: "Projekt Analiza Danych"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+    default_style: "light"
+    downcute_theme: "default"
+---
+
+```{r setup, include=FALSE}
+## Global options
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r} # Projekt_Analiza_Danych}
 # GitGirls 
 # W składzie: 
 # 1. Natalia Adamczyk 
@@ -6,12 +28,6 @@
 # 3. Wiktoria Gliniecka
 # Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, dowiedzieć się od czego zależy CENA nieruchomości, czyli domy, mieszkania. 
 # Plik: agencja_nieruchomosci
-
-
-#przedstawienie sie w terminalu
-#git config user.email "nattalia.adamczyk@gmail.com"
-#git config user.name "Natalka"
-
 
 install.packages("naniar")
 install.packages("ggplot2")
@@ -227,4 +243,12 @@ ggplot(data = data, aes(x = furnishingstatus, y = price, fill = furnishingstatus
 
 
 
+
+
+
+```
+
+```{r} 
+
+```
 
