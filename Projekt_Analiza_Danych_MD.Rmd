@@ -43,6 +43,7 @@ library(VIM)
 
 
 ```{r}
+#Read data from .csv
 data <- read.csv("agencja_nieruchomosci.csv")
 ```
 
