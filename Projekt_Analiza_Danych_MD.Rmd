@@ -143,14 +143,19 @@ Podsumowanie wystepowania rekordów niespełniających ustalonej wyżej reguły
 
 ```{r}
 summary(violatedEdits(RULE, data))
+violations_summary <- summary(violatedEdits(RULE, data))
+str(violations_summary)
 ```
 
-Jaki procent danych nie zawiera błędów?
+Z podsumowanie danych łamiących zapisaną wyżej regułę wynika, że większość wierszy (66.6%) w danych spełnia wszystkie reguły walidacyjne (errors = 0).
+28.4% wierszy narusza jedną regułę (errors = 1). 4.8% wierszy narusza dwie reguły (errors = 2). 0.2% wierszy narusza trzy reguły (errors = 3).
 
 ```{r}
-violated <- violatedEdits(RULE, data)
-summary(violated)
+
 ```
+
+
+
 
 Wykres pokazujący jaka część danych zawiera błędy 
 ```{r}
