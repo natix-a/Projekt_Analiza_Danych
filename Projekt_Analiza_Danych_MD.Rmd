@@ -4,7 +4,6 @@ output: html_document
 date: "2024-12-08"
 ---
 
-
 ---
 title: "Projekt Analiza Danych"
 date: "`r Sys.Date()`"
@@ -15,37 +14,61 @@ output:
     downcute_theme: "default"
 ---
 
+ # Projekt_Analiza_Danych
+ 
+GitGirls 
+
+W składzie: 
+1. Natalia Adamczyk 
+2. Paulina Lackowska
+3. Wiktoria Gliniecka
+
+
+Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, dowiedzieć się od czego zależy CENA nieruchomości, czyli domy, mieszkania. 
+
+Plik: agencja_nieruchomosci
+
 ```{r setup, include=FALSE}
-## Global options
+## Global optionsuuuuuu
 knitr::opts_chunk$set(cache = TRUE)
 ```
 
-```{r} # Projekt_Analiza_Danych}
-# GitGirls 
-# W składzie: 
-# 1. Natalia Adamczyk 
-# 2. Paulina Lackowska
-# 3. Wiktoria Gliniecka
-# Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, dowiedzieć się od czego zależy CENA nieruchomości, czyli domy, mieszkania. 
-# Plik: agencja_nieruchomosci
 
-install.packages("naniar")
-install.packages("ggplot2")
-install.packages("dplyr")
-
+```{r}
 library(dplyr)
 library(naniar)
 library(ggplot2)
+library(VIM)
+```
 
-getwd()
+
+```{r}
 data <- read.csv("agencja_nieruchomosci.csv")
-data
-View(data)
-# Podgląd danych
-head(data)
-# Struktura danych
-str(data)
+```
 
+Podgląd danych
+
+```{r}
+head(data)
+```
+
+Struktura danych
+
+```{r}
+str(data)
+```
+
+Eksploracja brakujących danych
+
+Całkowita liczbę NA dla całej ramki danych lub dla określonej zmiennej (kolumny)
+
+```{r}
+n_miss(data)
+```
+
+Całkowita liczbę NA dla zmiennych (kolumn)
+
+```{r}
 n_miss(data$price)
 n_miss(data$area)
 n_miss(data$bedrooms)
@@ -59,10 +82,24 @@ n_miss(data$airconditioning)
 n_miss(data$parking)
 n_miss(data$prefarea)
 n_miss(data$furnishingstatus)
+```
 
+
+liczba wartości innych niż NA w ramce danych lub zmiennej
+
+```{r}
 n_complete(data)
-prop_miss(data)
+```
 
+Proporcja wartości będących NA dla całej ramki danych
+
+```{r}
+prop_miss(data)
+```
+
+Proporcja wartości będących NA dla poszczególnych kolumn
+
+```{r}
 prop_miss(data$price)
 prop_miss(data$area)
 prop_miss(data$bedrooms)
@@ -76,21 +113,48 @@ prop_miss(data$airconditioning)
 prop_miss(data$parking)
 prop_miss(data$prefarea)
 prop_miss(data$furnishingstatus)
+```
 
+
+tabelę podsumowującą zawierającą liczbę brakujących NA
+
+```{r}
 miss_var_summary(data) 
-vis_miss(data)
+```
 
+Wizualizacja brakujących wartości
+
+```{r}
+vis_miss(data)
+```
+
+Tabelę podsumowującą brakujące wartości według wiersza
+
+Imputacja braków danych metodą HOT DECK
+
+```{r}
+cleaned_data <- hot_deck_impute(data)
+print(cleaned_data)
+```
+
+
+Wizualizacja danych
+```{r}
 gg_miss_upset(data, 
               nsets = 3)
               
 ggplot(data = data, aes(x = price, y = furnishingstatus)) +
   geom_point(size = 2, color = "cyan4") +
   theme_minimal()
-  
-# Załaduj ggplot2
-library(ggplot2)
+```
 
-# Tworzenie wykresu punktowego
+Załaduj ggplot2
+Tworzenie wykresu punktowego
+
+```{r} 
+
+
+
 ggplot(data = data, aes(x = area, y = price)) +
   geom_point() +
   labs(
@@ -101,8 +165,11 @@ ggplot(data = data, aes(x = area, y = price)) +
   theme_minimal()
 
 library(ggplot2)
+```
+```
+Wykres punktowy ceny w zależności od powierzchni
 
-# Wykres punktowy ceny w zależności od powierzchni
+```{r}
 ggplot(data = data, aes(x = area, y = price)) +
   geom_point(aes(color = price), size = 3, alpha = 0.7) +
   scale_color_gradient(low = "blue", high = "red") +
@@ -113,8 +180,11 @@ ggplot(data = data, aes(x = area, y = price)) +
     color = "Cena"
   ) +
   theme_minimal()
-  
-# Wykres słupkowy pięter w zależności od umeblowania
+```
+
+Wykres słupkowy pięter w zależności od umeblowania
+
+```{r}
 ggplot(data = data, aes(x = factor(stories), fill = furnishingstatus)) +
   geom_bar(position = "dodge") +
   labs(
@@ -125,8 +195,11 @@ ggplot(data = data, aes(x = factor(stories), fill = furnishingstatus)) +
   ) +
   theme_minimal() +
   scale_fill_brewer(palette = "Set2")
-  
-# Wykres boxplot ceny względem klimatyzacji
+```
+
+Wykres boxplot ceny względem klimatyzacji
+
+```{r}
 ggplot(data = data, aes(x = factor(airconditioning), y = price, fill = factor(airconditioning))) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("skyblue", "orange")) +
@@ -137,8 +210,11 @@ ggplot(data = data, aes(x = factor(airconditioning), y = price, fill = factor(ai
     fill = "Klimatyzacja"
   ) +
   theme_minimal()
-  
-  # Histogram cen z uwzględnieniem głównej drogi
+```
+
+Histogram cen z uwzględnieniem głównej drogi
+
+```{r}
 ggplot(data = data, aes(x = price, fill = factor(mainroad))) +
   geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
   scale_fill_manual(values = c("darkgreen", "yellow")) +
@@ -149,8 +225,11 @@ ggplot(data = data, aes(x = price, fill = factor(mainroad))) +
     fill = "Główna droga (0 = brak, 1 = obecność)"
   ) +
   theme_minimal()
+```
 
-# Zmiana zmiennych na kategorie, jeśli nie są już ustawione
+Zmiana zmiennych na kategorie, jeśli nie są już ustawione
+
+```{r}
 data <- data %>%
   mutate(
     mainroad = as.factor(mainroad),
@@ -161,7 +240,9 @@ data <- data %>%
     hotwaterheating = as.factor(hotwaterheating),
     furnishingstatus = as.factor(furnishingstatus)
   )
+```
 
+```{r}
 ggplot(data = data, aes(x = mainroad, y = price, fill = mainroad)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("darkgreen", "yellow")) +
@@ -172,8 +253,9 @@ ggplot(data = data, aes(x = mainroad, y = price, fill = mainroad)) +
     fill = "Główna droga"
   ) +
   theme_minimal()
+```
 
-
+```{r}
 ggplot(data = data, aes(x = prefarea, y = price, fill = prefarea)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("skyblue", "orange")) +
@@ -184,7 +266,9 @@ ggplot(data = data, aes(x = prefarea, y = price, fill = prefarea)) +
     fill = "Preferowana lokalizacja"
   ) +
   theme_minimal()
+```
 
+```{r}
 ggplot(data = data, aes(x = airconditioning, y = price, fill = airconditioning)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("blue", "red")) +
@@ -195,7 +279,9 @@ ggplot(data = data, aes(x = airconditioning, y = price, fill = airconditioning))
     fill = "Klimatyzacja"
   ) +
   theme_minimal()
-  
+```
+
+```{r}
   ggplot(data = data, aes(x = guestroom, y = price, fill = guestroom)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("purple", "green")) +
@@ -206,7 +292,9 @@ ggplot(data = data, aes(x = airconditioning, y = price, fill = airconditioning))
     fill = "Pokój gościnny"
   ) +
   theme_minimal()
-  
+```
+
+```{r}
   ggplot(data = data, aes(x = basement, y = price, fill = basement)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("grey", "brown")) +
@@ -217,7 +305,9 @@ ggplot(data = data, aes(x = airconditioning, y = price, fill = airconditioning))
     fill = "Piwnica"
   ) +
   theme_minimal()
+```
 
+```{r}
 ggplot(data = data, aes(x = hotwaterheating, y = price, fill = hotwaterheating)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("cyan", "pink")) +
@@ -228,7 +318,9 @@ ggplot(data = data, aes(x = hotwaterheating, y = price, fill = hotwaterheating))
     fill = "Ogrzewanie"
   ) +
   theme_minimal()
+```
 
+```{r}
 ggplot(data = data, aes(x = furnishingstatus, y = price, fill = furnishingstatus)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_brewer(palette = "Set2") +
@@ -239,16 +331,5 @@ ggplot(data = data, aes(x = furnishingstatus, y = price, fill = furnishingstatus
     fill = "Umeblowanie"
   ) +
   theme_minimal()
-  
-
-
-
-
-
-
-```
-
-```{r} 
-
 ```
 
