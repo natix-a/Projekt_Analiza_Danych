@@ -35,11 +35,12 @@ knitr::opts_chunk$set(cache = TRUE)
 
 
 ```{r}
-
 library(dplyr)
 library(naniar)
 library(ggplot2)
 library(VIM)
+library(editrules)
+library(validate)
 library(editrules)
 ```
 
@@ -132,10 +133,33 @@ Wizualizacja brakujących wartości
 vis_miss(data)
 ```
 
+Zmiana struktury danych z (yes/no) na dane (true/false)
+
+```{r}
+data$mainroad <- ifelse(data$mainroad == "yes", TRUE, 
+                                ifelse(data$mainroad == "no", FALSE, NA))
+                                
+data$guestroom <- ifelse(data$guestroom == "yes", TRUE, 
+                                ifelse(data$guestroom == "no", FALSE, NA))
+
+data$basement <- ifelse(data$basement == "yes", TRUE, 
+                                ifelse(data$basement == "no", FALSE, NA))
+
+data$hotwaterheating <- ifelse(data$hotwaterheating == "yes", TRUE, 
+                                ifelse(data$hotwaterheating == "no", FALSE, NA))
+
+data$airconditioning <- ifelse(data$airconditioning == "yes", TRUE, 
+                                ifelse(data$airconditioning == "no", FALSE, NA))
+                                
+data$prefarea <- ifelse(data$prefarea == "yes", TRUE, 
+                                ifelse(data$prefarea == "no", FALSE, NA))
+
+```
+
 Definiowanie reguł w celu zwiększenia spójności danych
 
 ```{r}
-RULE <- editset(c("price > 0","area > 0", "bedrooms >= 1","bathrooms >= 1", "stories >= 1", "mainroad %in% c('yes','no')","guestroom %in% c('yes','no')", "basement %in% c('yes','no')", "hotwaterheating %in% c('yes','no')", "airconditioning %in% c('yes','no')", "prefarea %in% c('yes','no')", "parking >= 0", "furnishingstatus %in% c('furnished','semi-furnished','unfurnished')"))
+RULE <- editset(c("price > 0","area > 0", "bedrooms >= 1","bathrooms >= 1", "stories >= 1", "mainroad %in% c('TRUE','FALSE')","guestroom %in% c('TRUE','FALSE')", "basement %in% c('TRUE','FALSE')", "hotwaterheating %in% c('TRUE','FALSE')", "airconditioning %in% c('TRUE','FALSE')", "prefarea %in% c('TRUE','FALSE')", "parking >= 0", "furnishingstatus %in% c('furnished','semi-furnished','unfurnished')"))
 RULE
 ```
 
@@ -145,49 +169,124 @@ Podsumowanie wystepowania rekordów niespełniających ustalonej wyżej reguły
 summary(violatedEdits(RULE, data))
 violations_summary <- summary(violatedEdits(RULE, data))
 str(violations_summary)
-```
-
-Z podsumowanie danych łamiących zapisaną wyżej regułę wynika, że większość wierszy (66.6%) w danych spełnia wszystkie reguły walidacyjne (errors = 0).
-28.4% wierszy narusza jedną regułę (errors = 1). 4.8% wierszy narusza dwie reguły (errors = 2). 0.2% wierszy narusza trzy reguły (errors = 3).
 
 
-Wykres pokazujący jaka część danych zawiera błędy 
-```{r}
 plot(violated)
+
 ```
 
-Ustalenie obserwacji odstających dla zmiennej 'area'
+Z podsumowania danych łamiących zapisaną wyżej regułę wynika, że większość wierszy (66.6%) w danych spełnia wszystkie reguły walidacyjne (errors = 0).
+28.4% wierszy narusza jedną regułę (errors = 1). 4.8% wierszy narusza dwie reguły (errors = 2). 0.2% wierszy narusza trzy reguły (errors = 3).To jaka część obserwacji nie spełani reguł możemy zobaczyć na wykresie. 
+
+
+Dla spójności i poprawności danych stodujemy reguły walidacyjne. Wykorzystujemy zdefiniowane wcześniej reguły. Błędne wartości w danych zastąpujemy NA, co umożliwia ich łatwą identyfikację i w puźniejszych krokach ułatwi wykosztanie ich w analizie. Wykorzystujemy do tego celu bibliotekę validate, aby wszytskie obserwacje łamiące wspomniane regułu zastępujemy wartością NA.Oznacza to, że będzie możliwe implementacja w to miejsce wartości spełniające wymogi danych. 
 
 ```{r}
-data$area[outliers_idx]
+RULE <- validator(
+  price > 0,
+  area > 0,
+  bedrooms >= 1,
+  bathrooms >= 1,
+  stories >= 1,
+  mainroad %in% c('TRUE', 'FALSE'),
+  guestroom %in% c('TRUE', 'FALSE'),
+  basement %in% c('TRUE', 'FALSE'),
+  hotwaterheating %in% c('TRUE', 'FALSE'),
+  airconditioning %in% c('TRUE', 'FALSE'),
+  prefarea %in% c('TRUE', 'FALSE'),
+  parking >= 0,
+  furnishingstatus %in% c('furnished', 'semi-furnished', 'unfurnished')
+)
+
+correct_with_rules <- function(data, rules) {
+  violations <- confront(data, rules)
+  for (col in names(data)) {
+    if (col %in% names(rules)) {
+      invalid_rows <- values(violations)[, col] == FALSE
+      data[[col]][invalid_rows] <- NA
+    }
+  }
+  return(data)
+}
 ```
 
+Analiza wartości odstających dla zmiennej 'price' 
+
+Identyfikujemy wartości odstające w zmiennej `price` Następnie znajdujemy indeksy wierszy zawierających te wartości odstające za pomocą funkcji `which`. Używamy wykresu pudełkowegp do wizualizacji zmiennej `price`, gdzie outliery są automatycznie zaznaczane na wykresie. W kolejnych krokach modyfikujemy wartości w drugiej kolumnie dla wierszy z wartościami odstającymi w `price`, dzieląc je przez 10 w celu ich zmniejszenia. Ten proces pozwala nam spojrzeć na przeciętne wartości dla danych o sprzedaży mieszkań. Jeśli chodzi o cenę jest ona zmienną mocno subiektywną. Niekoniecznie wynika z faktycznej wartości produktu ale np. z bardzo konkretnej lokalizacji. Ponieważ w naszych danych nie mamy informacji o np. wspomnianej konkretnej lokalizacji nie możemy wziąć jej pod uwagę przy dalaszej interpretacji ceny. Dane bez wprowqadzonych modyfikacji zostawiamy jako 'data_with_outliars'dla celów porównawczych. 
+
 
 ```{r}
+outliers <- boxplot.stats(data$price)$out
+outliers_idx <- which(data$price %in% outliers)
+data[outliers_idx,]
+
+boxplot(data$price, 
+        main = "Wartości odstające dla zmiennej 'price'",
+        ylab = "Wartości price",
+        col = "lightblue",
+        outline = TRUE)
+
+data[outliers_idx, 2] <- data[outliers_idx, 2] / 10
+
+data_with_outliars <- read.csv("agencja_nieruchomosci.csv")
+```
+
+Analiza wartości odstających dla zmiennej 'area'
+
+Drugą zmienną w której mogą wystapić wartości odstające jest zmienna 'area'. Dlatego przechodzimy do identyfikacji wartości odstających w zmiennej `area` do ich lepszego zobrazowania wykorzystamy wykres pudełkowy. Widzimy, że są to wartości ekstremalnie wysokie. Na razie nie będziemy modyfikować tych wartości. Z perspektywy biznesowej ważne jest aby zbadać jak duża powierzchnia wpływa na cenę. Czy w przypadku odstających pod katem wielkości są one również zdecydowanie droższe. 
+
+```{r}
+
 outliers <- boxplot.stats(data$area)$out
 outliers_idx <- which(data$area %in% outliers)
 data[outliers_idx,]
+
+boxplot(data$area, 
+        main = "Wartości odstające dla zmiennej 'area'",
+        ylab = "Wartości area",
+        col = "lightblue",
+        outline = TRUE)
+
 ```
+
+Imputacja braków danych metodą sequential hotdeck
+
+Zdecydowałyśmy się na metodę sequential hot-deck do imputacji brakujących danych.Metoda Sequential hot-deck wykorzystuje rzeczywiste wartości z naszego zbioru danych, co sprawia, że prawdopodobieństwo wprowadzenia sztucznych wartości jest małe. Dodatkowo załeży nam na zachowaniu naturalnego rozkładu danych. Metoda ta jest elastyczna i działa zarówno dla danych liczbowych, jak i kategorycznych, nie wymagając założeń o rozkładzie zmiennych. Dodatkowo, metoda ta jest odporna na outliery co było dla nas ważne po wcześniejszym zbadaniu ich występowania dla zmiennych price i area. 
 
 ```{r}
-data[outliers_idx, 2] <- data[outliers_idx, 2] / 10
-summary(data)
+seqImpute <- function(x, last = max(x, na.rm = TRUE)) {
+  n <- length(x)
+  x <- c(x, last)
+  i <- is.na(x)
+  while (any(i)) {
+    x[i] <- x[which(i) + 1]
+    i <- is.na(x)
+  }
+  x[1:n]
+}
+
+
+for (col in names(agencja_nieruchomosci)) {
+  if (is.numeric(agencja_nieruchomosci[[col]])) {
+    
+    o <- order(agencja_nieruchomosci[[col]], na.last = TRUE)
+    imputowane <- seqImpute(agencja_nieruchomosci[[col]][o])
+    agencja_nieruchomosci[[col]][o] <- imputowane
+  }
+}
+
+
+summary(agencja_nieruchomosci)
+
 ```
-```{r}
-boxplot(area ~ price, data=data)
-```
 
+Eksploracja danych 
 
+Sortowanie danych według zmiennej 'price' 
 
+Grupowanie według kategorii i analiza struktury danych pąd kątem tych grup 
 
-Tabelę podsumowującą brakujące wartości według wiersza
-
-Imputacja braków danych metodą HOT DECK
-
-```{r}
-cleaned_data <- hot_deck_impute(data)
-print(cleaned_data)
-```
+Analiza struktury danych dla zmiennej 'furnishingstatus'
 
 
 Wizualizacja danych
