@@ -14,17 +14,13 @@ output:
     downcute_theme: "default"
 ---
 
- # Projekt_Analiza_Danych
- 
-GitGirls 
+\# Projekt_Analiza_Danych
 
-W składzie: 
-1. Natalia Adamczyk 
-2. Paulina Lackowska
-3. Wiktoria Gliniecka
+GitGirls
 
+W składzie: 1. Natalia Adamczyk 2. Paulina Lackowska 3. Wiktoria Gliniecka
 
-Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, dowiedzieć się od czego zależy CENA nieruchomości, czyli domy, mieszkania. 
+Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, dowiedzieć się od czego zależy CENA nieruchomości, czyli domy, mieszkania.
 
 Plik: agencja_nieruchomosci
 
@@ -32,7 +28,6 @@ Plik: agencja_nieruchomosci
 ## Global optionsuuuuuu
 knitr::opts_chunk$set(cache = TRUE)
 ```
-
 
 ```{r}
 library(dplyr)
@@ -42,8 +37,8 @@ library(VIM)
 library(editrules)
 library(validate)
 library(editrules)
-```
 
+```
 
 ```{r}
 #Read data from .csv
@@ -63,7 +58,9 @@ Struktura danych
 str(data)
 ```
 
-Eksploracja brakujących danych
+# Data Wrangling
+
+## Eksploracja braków danych
 
 Całkowita liczbę NA dla całej ramki danych lub dla określonej zmiennej (kolumny)
 
@@ -88,7 +85,6 @@ n_miss(data$parking)
 n_miss(data$prefarea)
 n_miss(data$furnishingstatus)
 ```
-
 
 liczba wartości innych niż NA w ramce danych lub zmiennej
 
@@ -120,7 +116,6 @@ prop_miss(data$prefarea)
 prop_miss(data$furnishingstatus)
 ```
 
-
 tabelę podsumowującą zawierającą liczbę brakujących NA
 
 ```{r}
@@ -133,7 +128,21 @@ Wizualizacja brakujących wartości
 vis_miss(data)
 ```
 
-Zmiana struktury danych z (yes/no) na dane (true/false)
+## Imputacja braków danych metodą sequential hotdeck
+
+Zdecydowałyśmy się na metodę sequential hot-deck do imputacji brakujących danych.Metoda Sequential hot-deck wykorzystuje rzeczywiste wartości z naszego zbioru danych, co sprawia, że prawdopodobieństwo wprowadzenia sztucznych wartości jest małe. Dodatkowo załeży nam na zachowaniu naturalnego rozkładu danych. Metoda ta jest elastyczna i działa zarówno dla danych liczbowych, jak i kategorycznych, nie wymagając założeń o rozkładzie zmiennych. Dodatkowo, metoda ta jest odporna na outliery co było dla nas ważne po wcześniejszym zbadaniu ich występowania dla zmiennych price i area. na koniec prównamy brakujące dane przed i po imputacji aby upewnić się, że proces przebiegł pomyślnie.
+
+```{r}
+data_imputed <- hotdeck(data)
+
+n_miss(data) 
+n_miss(data_imputed) 
+```
+
+
+## Porządkowanie struktury danych 
+
+### Zmiana wartości (yes/no) na wartości (TRUE/FALSE) 
 
 ```{r}
 data$mainroad <- ifelse(data$mainroad == "yes", TRUE, 
@@ -156,14 +165,14 @@ data$prefarea <- ifelse(data$prefarea == "yes", TRUE,
 
 ```
 
-Definiowanie reguł w celu zwiększenia spójności danych
+## Definiowanie reguł w celu zwiększenia spójności danych
 
 ```{r}
-RULE <- editset(c("price > 0","area > 0", "bedrooms >= 1","bathrooms >= 1", "stories >= 1", "mainroad %in% c('TRUE','FALSE')","guestroom %in% c('TRUE','FALSE')", "basement %in% c('TRUE','FALSE')", "hotwaterheating %in% c('TRUE','FALSE')", "airconditioning %in% c('TRUE','FALSE')", "prefarea %in% c('TRUE','FALSE')", "parking >= 0", "furnishingstatus %in% c('furnished','semi-furnished','unfurnished')"))
+RULE <- editset(c("price > 0","area > 0", "bedrooms >= 1","bathrooms >= 1", "stories >= 1", "mainroad %in% c(TRUE,FALSE)","guestroom %in% c(TRUE,FALSE)", "basement %in% c(TRUE,FALSE)", "hotwaterheating %in% c(TRUE,FALSE)", "airconditioning %in% c(TRUE,FALSE)", "prefarea %in% c(TRUE,FALSE)", "parking >= 0", "furnishingstatus %in% c('furnished','semi-furnished','unfurnished')"))
 RULE
 ```
 
-Podsumowanie wystepowania rekordów niespełniających ustalonej wyżej reguły 
+### Podsumowanie rekordów niespełniających ustalonej wyżej reguły
 
 ```{r}
 summary(violatedEdits(RULE, data))
@@ -175,11 +184,9 @@ plot(violated)
 
 ```
 
-Z podsumowania danych łamiących zapisaną wyżej regułę wynika, że większość wierszy (66.6%) w danych spełnia wszystkie reguły walidacyjne (errors = 0).
-28.4% wierszy narusza jedną regułę (errors = 1). 4.8% wierszy narusza dwie reguły (errors = 2). 0.2% wierszy narusza trzy reguły (errors = 3).To jaka część obserwacji nie spełani reguł możemy zobaczyć na wykresie. 
+Z podsumowania danych łamiących zapisaną wyżej regułę wynika, że większość wierszy (66.6%) w danych spełnia wszystkie reguły walidacyjne (errors = 0). 28.4% wierszy narusza jedną regułę (errors = 1). 4.8% wierszy narusza dwie reguły (errors = 2). 0.2% wierszy narusza trzy reguły (errors = 3).To jaka część obserwacji nie spełani reguł możemy zobaczyć na wykresie.
 
-
-Dla spójności i poprawności danych stodujemy reguły walidacyjne. Wykorzystujemy zdefiniowane wcześniej reguły. Błędne wartości w danych zastąpujemy NA, co umożliwia ich łatwą identyfikację i w puźniejszych krokach ułatwi wykosztanie ich w analizie. Wykorzystujemy do tego celu bibliotekę validate, aby wszytskie obserwacje łamiące wspomniane regułu zastępujemy wartością NA.Oznacza to, że będzie możliwe implementacja w to miejsce wartości spełniające wymogi danych. 
+Dla spójności i poprawności danych stodujemy reguły walidacyjne. Wykorzystujemy zdefiniowane wcześniej reguły. Błędne wartości w danych zastąpujemy NA, co umożliwia ich łatwą identyfikację i w puźniejszych krokach ułatwi wykosztanie ich w analizie. Wykorzystujemy do tego celu bibliotekę validate, aby wszytskie obserwacje łamiące wspomniane regułu zastępujemy wartością NA.Oznacza to, że będzie możliwe implementacja w to miejsce wartości spełniające wymogi danych.
 
 ```{r}
 RULE <- validator(
@@ -210,10 +217,11 @@ correct_with_rules <- function(data, rules) {
 }
 ```
 
-Analiza wartości odstających dla zmiennej 'price' 
+## Wartości odstające 
 
-Identyfikujemy wartości odstające w zmiennej `price` Następnie znajdujemy indeksy wierszy zawierających te wartości odstające za pomocą funkcji `which`. Używamy wykresu pudełkowegp do wizualizacji zmiennej `price`, gdzie outliery są automatycznie zaznaczane na wykresie. W kolejnych krokach modyfikujemy wartości w drugiej kolumnie dla wierszy z wartościami odstającymi w `price`, dzieląc je przez 10 w celu ich zmniejszenia. Ten proces pozwala nam spojrzeć na przeciętne wartości dla danych o sprzedaży mieszkań. Jeśli chodzi o cenę jest ona zmienną mocno subiektywną. Niekoniecznie wynika z faktycznej wartości produktu ale np. z bardzo konkretnej lokalizacji. Ponieważ w naszych danych nie mamy informacji o np. wspomnianej konkretnej lokalizacji nie możemy wziąć jej pod uwagę przy dalaszej interpretacji ceny. Dane bez wprowqadzonych modyfikacji zostawiamy jako 'data_with_outliars'dla celów porównawczych. 
+### Analiza wartości odstających dla zmiennej 'price'
 
+Identyfikujemy wartości odstające w zmiennej `price` Następnie znajdujemy indeksy wierszy zawierających te wartości odstające za pomocą funkcji `which`. Używamy wykresu pudełkowegp do wizualizacji zmiennej `price`, gdzie outliery są automatycznie zaznaczane na wykresie. W kolejnych krokach modyfikujemy wartości w drugiej kolumnie dla wierszy z wartościami odstającymi w `price`, dzieląc je przez 10 w celu ich zmniejszenia. Ten proces pozwala nam spojrzeć na przeciętne wartości dla danych o sprzedaży mieszkań. Jeśli chodzi o cenę jest ona zmienną mocno subiektywną. Niekoniecznie wynika z faktycznej wartości produktu ale np. z bardzo konkretnej lokalizacji. Ponieważ w naszych danych nie mamy informacji o np. wspomnianej konkretnej lokalizacji nie możemy wziąć jej pod uwagę przy dalaszej interpretacji ceny. Dane bez wprowqadzonych modyfikacji zostawiamy jako 'data_with_outliars'dla celów porównawczych.
 
 ```{r}
 outliers <- boxplot.stats(data$price)$out
@@ -231,9 +239,9 @@ data[outliers_idx, 2] <- data[outliers_idx, 2] / 10
 data_with_outliars <- read.csv("agencja_nieruchomosci.csv")
 ```
 
-Analiza wartości odstających dla zmiennej 'area'
+### Analiza wartości odstających dla zmiennej 'area'
 
-Drugą zmienną w której mogą wystapić wartości odstające jest zmienna 'area'. Dlatego przechodzimy do identyfikacji wartości odstających w zmiennej `area` do ich lepszego zobrazowania wykorzystamy wykres pudełkowy. Widzimy, że są to wartości ekstremalnie wysokie. Na razie nie będziemy modyfikować tych wartości. Z perspektywy biznesowej ważne jest aby zbadać jak duża powierzchnia wpływa na cenę. Czy w przypadku odstających pod katem wielkości są one również zdecydowanie droższe. 
+Drugą zmienną w której mogą wystapić wartości odstające jest zmienna 'area'. Dlatego przechodzimy do identyfikacji wartości odstających w zmiennej `area` do ich lepszego zobrazowania wykorzystamy wykres pudełkowy. Widzimy, że są to wartości ekstremalnie wysokie. Na razie nie będziemy modyfikować tych wartości. Z perspektywy biznesowej ważne jest aby zbadać jak duża powierzchnia wpływa na cenę. Czy w przypadku odstających pod katem wielkości są one również zdecydowanie droższe.
 
 ```{r}
 
@@ -249,34 +257,80 @@ boxplot(data$area,
 
 ```
 
-Imputacja braków danych metodą sequential hotdeck
+# Eksploracja danych
 
-Zdecydowałyśmy się na metodę sequential hot-deck do imputacji brakujących danych.Metoda Sequential hot-deck wykorzystuje rzeczywiste wartości z naszego zbioru danych, co sprawia, że prawdopodobieństwo wprowadzenia sztucznych wartości jest małe. Dodatkowo załeży nam na zachowaniu naturalnego rozkładu danych. Metoda ta jest elastyczna i działa zarówno dla danych liczbowych, jak i kategorycznych, nie wymagając założeń o rozkładzie zmiennych. Dodatkowo, metoda ta jest odporna na outliery co było dla nas ważne po wcześniejszym zbadaniu ich występowania dla zmiennych price i area. 
+## Sortowanie danych rosnąco według zmiennej 'price'.
 
-```{r}
-
-
-```
-
-Eksploracja danych 
-
-Sortowanie danych rosnąco według zmiennej 'price'. Ponieważ Dla naszej analizy kluczową zmienną będzie cena a pytania jake sobie postawimy będą głównie związane z tym jakie czynniki na nią wpływają. ustawienie danych roznąco pod kątem ceny ułatwi prace i podglądanie struktury danych. Łatwiej w ten sposób zauważyć jakie są 
+Ponieważ Dla naszej analizy kluczową zmienną będzie cena a pytania jake sobie postawimy będą głównie związane z tym jakie czynniki na nią wpływają. ustawienie danych roznąco pod kątem ceny ułatwi prace i podglądanie struktury danych. Łatwiej w ten sposób zauważyć jakie są
 
 ```{r}
 data %>% arrange('price')
 ```
 
+## Analiza struktury danych pod kątem zmiennych
 
-Grupowanie według kategorii i analiza struktury danych pąd kątem tych grup 
+```{r}
 
-Analiza struktury danych dla zmiennej 'furnishingstatus'
+logical_columns <- c("mainroad", "guestroom", "basement", "hotwaterheating", "airconditioning", "prefarea")
+
+for (col in logical_columns) {
+  total <- sum(!is.na(data[[col]]))
+  true_percent <- round(sum(data[[col]] == TRUE, na.rm = TRUE) / total * 100, 2)
+  false_percent <- round(sum(data[[col]] == FALSE, na.rm = TRUE) / total * 100, 2)
+  cat(sprintf("Kolumna: %s, TRUE: %.2f%%, FALSE: %.2f%%\n", col, true_percent, false_percent))
+}
+```
+
+Kolumna: mainroad, TRUE: 86.46%, FALSE: 13.54%
+Kolumna: guestroom, TRUE: 17.80%, FALSE: 82.20%
+Kolumna: basement, TRUE: 35.05%, FALSE: 64.95%
+Kolumna: hotwaterheating, TRUE: 4.59%, FALSE: 95.41%
+Kolumna: airconditioning, TRUE: 31.56%, FALSE: 68.44%
+Kolumna: prefarea, TRUE: 24.65%, FALSE: 75.35%
+
+Dodatkowo aby lepiej zobarzować dane pokazane w podsumowaniu tworzymy wykresy słupkowe dla podanych zmiennych
+
+```{r}
+for (col in logical_columns) {
+  true_percent <- mean(data[[col]] == TRUE, na.rm = TRUE) * 100
+  false_percent <- mean(data[[col]] == FALSE, na.rm = TRUE) * 100
+  
+  barplot(
+    c("TRUE" = true_percent, "FALSE" = false_percent),
+    main = paste("Procent TRUE/FALSE dla", col),
+    ylab = "Procent",
+    col = c("lightblue", "lightcoral")
+  )
+}
+```
+
+### Analiza struktury danych dla zmiennej 'furnishingstatus'
+
+```{r}
+furnishing_counts <- table(data$furnishingstatus)
+furnishing_percentages <- round(prop.table(furnishing_counts) * 100, 2)
+
+
+print(furnishing_percentages)
+
+
+barplot(
+  furnishing_percentages,
+  main = "Procentowy rozkład furnishingstatus",
+  ylab = "Procent",
+  col = c("lightblue", "lightgreen", "lightcoral"),
+  names.arg = names(furnishing_percentages)
+)
+```
 
 
 Wizualizacja danych
+
+
 ```{r}
 gg_miss_upset(data, 
               nsets = 3)
-              
+
 ggplot(data = data, aes(x = price, y = furnishingstatus)) +
   geom_point(size = 2, color = "cyan4") +
   theme_minimal()
@@ -416,7 +470,7 @@ ggplot(data = data, aes(x = airconditioning, y = price, fill = airconditioning))
 ```
 
 ```{r}
-  ggplot(data = data, aes(x = guestroom, y = price, fill = guestroom)) +
+ggplot(data = data, aes(x = guestroom, y = price, fill = guestroom)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("purple", "green")) +
   labs(
@@ -429,7 +483,7 @@ ggplot(data = data, aes(x = airconditioning, y = price, fill = airconditioning))
 ```
 
 ```{r}
-  ggplot(data = data, aes(x = basement, y = price, fill = basement)) +
+ggplot(data = data, aes(x = basement, y = price, fill = basement)) +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values = c("grey", "brown")) +
   labs(
@@ -465,5 +519,3 @@ ggplot(data = data, aes(x = furnishingstatus, y = price, fill = furnishingstatus
     fill = "Umeblowanie"
   ) +
   theme_minimal()
-```
-
