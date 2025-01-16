@@ -254,35 +254,18 @@ Imputacja braków danych metodą sequential hotdeck
 Zdecydowałyśmy się na metodę sequential hot-deck do imputacji brakujących danych.Metoda Sequential hot-deck wykorzystuje rzeczywiste wartości z naszego zbioru danych, co sprawia, że prawdopodobieństwo wprowadzenia sztucznych wartości jest małe. Dodatkowo załeży nam na zachowaniu naturalnego rozkładu danych. Metoda ta jest elastyczna i działa zarówno dla danych liczbowych, jak i kategorycznych, nie wymagając założeń o rozkładzie zmiennych. Dodatkowo, metoda ta jest odporna na outliery co było dla nas ważne po wcześniejszym zbadaniu ich występowania dla zmiennych price i area. 
 
 ```{r}
-seqImpute <- function(x, last = max(x, na.rm = TRUE)) {
-  n <- length(x)
-  x <- c(x, last)
-  i <- is.na(x)
-  while (any(i)) {
-    x[i] <- x[which(i) + 1]
-    i <- is.na(x)
-  }
-  x[1:n]
-}
 
-
-for (col in names(agencja_nieruchomosci)) {
-  if (is.numeric(agencja_nieruchomosci[[col]])) {
-    
-    o <- order(agencja_nieruchomosci[[col]], na.last = TRUE)
-    imputowane <- seqImpute(agencja_nieruchomosci[[col]][o])
-    agencja_nieruchomosci[[col]][o] <- imputowane
-  }
-}
-
-
-summary(agencja_nieruchomosci)
 
 ```
 
 Eksploracja danych 
 
-Sortowanie danych według zmiennej 'price' 
+Sortowanie danych rosnąco według zmiennej 'price'. Ponieważ Dla naszej analizy kluczową zmienną będzie cena a pytania jake sobie postawimy będą głównie związane z tym jakie czynniki na nią wpływają. ustawienie danych roznąco pod kątem ceny ułatwi prace i podglądanie struktury danych. Łatwiej w ten sposób zauważyć jakie są 
+
+```{r}
+data %>% arrange('price')
+```
+
 
 Grupowanie według kategorii i analiza struktury danych pąd kątem tych grup 
 
