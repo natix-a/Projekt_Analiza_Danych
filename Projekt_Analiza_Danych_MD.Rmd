@@ -37,6 +37,7 @@ library(VIM)
 library(editrules)
 library(validate)
 library(editrules)
+library(xts)
 
 ```
 
@@ -126,17 +127,6 @@ Wizualizacja brakujących wartości
 
 ```{r}
 vis_miss(data)
-```
-
-## Imputacja braków danych metodą sequential hotdeck
-
-Zdecydowałyśmy się na metodę sequential hot-deck do imputacji brakujących danych.Metoda Sequential hot-deck wykorzystuje rzeczywiste wartości z naszego zbioru danych, co sprawia, że prawdopodobieństwo wprowadzenia sztucznych wartości jest małe. Dodatkowo załeży nam na zachowaniu naturalnego rozkładu danych. Metoda ta jest elastyczna i działa zarówno dla danych liczbowych, jak i kategorycznych, nie wymagając założeń o rozkładzie zmiennych. Dodatkowo, metoda ta jest odporna na outliery co było dla nas ważne po wcześniejszym zbadaniu ich występowania dla zmiennych price i area. na koniec prównamy brakujące dane przed i po imputacji aby upewnić się, że proces przebiegł pomyślnie.
-
-```{r}
-data_imputed <- hotdeck(data)
-
-n_miss(data) 
-n_miss(data_imputed) 
 ```
 
 
@@ -323,7 +313,79 @@ barplot(
 )
 ```
 
+## Imputacja braków danych metodą sequential hotdeck
 
+Zdecydowałyśmy się na metodę sequential hot-deck do imputacji brakujących danych.Metoda Sequential hot-deck wykorzystuje rzeczywiste wartości z naszego zbioru danych, co sprawia, że prawdopodobieństwo wprowadzenia sztucznych wartości jest małe. Dodatkowo załeży nam na zachowaniu naturalnego rozkładu danych. Metoda ta jest elastyczna i działa zarówno dla danych liczbowych, jak i kategorycznych, nie wymagając założeń o rozkładzie zmiennych. Dodatkowo, metoda ta jest odporna na outliery co było dla nas ważne po wcześniejszym zbadaniu ich występowania dla zmiennych price i area. na koniec prównamy brakujące dane przed i po imputacji aby upewnić się, że proces przebiegł pomyślnie.
+
+```{r}
+
+data_not_cleaned <- hotdeck(data)
+
+
+cat("Liczba brakujących wartości po imputacji:", sum(is.na(data_not_cleaned)), "\n")
+
+
+remove_imp_columns <- function(df) {
+ 
+  if (!is.data.frame(df)) {
+    stop("Podany obiekt nie jest ramką danych")
+  }
+  
+ 
+  imp_cols <- grep("_imp$", colnames(df), value = TRUE)
+  
+ 
+  if (length(imp_cols) == 0) {
+    message("Nie znaleziono kolumn z '_imp' w nazwie.")
+    return(df)
+  }
+  
+
+  df_cleaned <- df[, !colnames(df) %in% imp_cols]
+  
+  message("Usunięto następujące kolumny: ", paste(imp_cols, collapse = ", "))
+  
+  return(df_cleaned)
+}
+
+
+data_imputed <- remove_imp_columns(data_not_cleaned)
+
+
+cat("Struktura danych po usunięciu kolumn '_imp':")
+str(data_imputed)
+
+
+head(data_imputed)
+```
+#Normalizacja zmiennych numerycznych 
+
+Kolejnym etapem jest normalizacja zmiennych numerycznych, takich jak cena, powierzchnia, liczba sypialni, czy liczba miejsc parkingowych, co pozwala na przekształcenie danych do wspólnej skali bez utraty relatywnej informacji. Do tego celu wykorzystano metodę min-max scaling, która przekształca wartości w przedziale od 0 do 1, co ułatwia dalsze analizy statystyczne oraz modelowanie. Proces normalizacji zapewnia większą spójność danych i eliminuje wpływ różnych skal poszczególnych zmiennych na wyniki analizy.Dzięki zastosowanym technikom przetwarzania danych uzyskane wyniki pozwolą na dokładniejszą interpretację wpływu poszczególnych cech nieruchomości na ich wartość rynkową oraz na lepsze przygotowanie danych do wykorzystania w modelach predykcyjnych.
+
+```{r}
+minmax <- function(data, columns_to_normalize) {
+ 
+  missing_cols <- setdiff(columns_to_normalize, colnames(data))
+  if (length(missing_cols) > 0) {
+    stop(paste("Nie znaleziono kolumn:", paste(missing_cols, collapse = ", ")))
+  }
+  
+  data_normalized <- data %>%
+    mutate(across(all_of(columns_to_normalize), 
+                  ~ (.-min(., na.rm = TRUE)) / (max(., na.rm = TRUE) - min(., na.rm = TRUE)),
+                  .names = "norm_{.col}"))
+  
+  return(data_normalized)
+}
+
+columns_to_normalize <- c("price", "area", "bedrooms", "bathrooms", "stories", "parking")
+
+str(data_imputed)
+
+data_imputed <- minmax(data, columns_to_normalize)
+
+head(data_imputed)
+```
 Wizualizacja danych
 
 
