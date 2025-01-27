@@ -387,197 +387,138 @@ data_imputed <- minmax(data, columns_to_normalize)
 head(data_imputed)
 ```
 Wizualizacja danych
-
-
+1. Mapowanie danych (wykresy)
+Na przykładzie zależności między ceną (price) a powierzchnią (area).
 ```{r}
-gg_miss_upset(data, 
-              nsets = 3)
-
-ggplot(data = data, aes(x = price, y = furnishingstatus)) +
-  geom_point(size = 2, color = "cyan4") +
-  theme_minimal()
-```
-
-Załaduj ggplot2
-Tworzenie wykresu punktowego
-
-```{r} 
-
-
-
-ggplot(data = data, aes(x = area, y = price)) +
-  geom_point() +
-  labs(
-    title = "Cena nieruchomości wg powierzchni",
-    x = "Powierzchnia",
-    y = "Cena"
-  ) +
-  theme_minimal()
-
+# Wykres rozrzutu z ceną na osi Y i powierzchnią na osi X
 library(ggplot2)
-```
-```
-Wykres punktowy ceny w zależności od powierzchni
 
-```{r}
-ggplot(data = data, aes(x = area, y = price)) +
-  geom_point(aes(color = price), size = 3, alpha = 0.7) +
-  scale_color_gradient(low = "blue", high = "red") +
-  labs(
-    title = "Cena nieruchomości w zależności od powierzchni",
-    x = "Powierzchnia (m²)",
-    y = "Cena (zł)",
-    color = "Cena"
-  ) +
+ggplot(data_imputed, aes(x = area, y = price, color = prefarea)) +
+  geom_point(size = 3, alpha = 0.7) +
+  scale_color_manual(values = c("yes" = "blue", "no" = "red")) +
+  labs(title = "Cena vs. Powierzchnia z podziałem na preferowaną lokalizację",
+       x = "Powierzchnia (m2)",
+       y = "Cena (PLN)") +
   theme_minimal()
+
 ```
-
-Wykres słupkowy pięter w zależności od umeblowania
-
+2. Wizualizacja ilości
+a) Histogram rozkładu liczby sypialni (bedrooms).
 ```{r}
-ggplot(data = data, aes(x = factor(stories), fill = furnishingstatus)) +
-  geom_bar(position = "dodge") +
-  labs(
-    title = "Liczba pięter w zależności od statusu umeblowania",
-    x = "Liczba pięter",
-    y = "Liczba nieruchomości",
-    fill = "Status umeblowania"
-  ) +
-  theme_minimal() +
-  scale_fill_brewer(palette = "Set2")
-```
-
-Wykres boxplot ceny względem klimatyzacji
-
-```{r}
-ggplot(data = data, aes(x = factor(airconditioning), y = price, fill = factor(airconditioning))) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_manual(values = c("skyblue", "orange")) +
-  labs(
-    title = "Cena nieruchomości w zależności od klimatyzacji",
-    x = "Klimatyzacja (0 = brak, 1 = obecna)",
-    y = "Cena (zł)",
-    fill = "Klimatyzacja"
-  ) +
+# Histogram liczby sypialni
+ggplot(data_imputed, aes(x = bedrooms)) +
+  geom_bar(fill = "steelblue", color = "black", alpha = 0.8) +
+  labs(title = "Rozkład liczby sypialni",
+       x = "Liczba sypialni",
+       y = "Liczba nieruchomości") +
   theme_minimal()
+
 ```
-
-Histogram cen z uwzględnieniem głównej drogi
-
+b) Liczba nieruchomości w zależności od dostępu do drogi głównej (mainroad):
 ```{r}
-ggplot(data = data, aes(x = price, fill = factor(mainroad))) +
-  geom_histogram(position = "dodge", bins = 30, alpha = 0.7) +
-  scale_fill_manual(values = c("darkgreen", "yellow")) +
-  labs(
-    title = "Rozkład cen nieruchomości w zależności od obecności przy głównej drodze",
-    x = "Cena (zł)",
-    y = "Liczba nieruchomości",
-    fill = "Główna droga (0 = brak, 1 = obecność)"
-  ) +
+# Histogram liczby nieruchomości z dostępem do drogi głównej
+ggplot(data_imputed, aes(x = mainroad)) +
+  geom_bar(fill = "orange", color = "black", alpha = 0.8) +
+  labs(title = "Liczba nieruchomości z dostępem do drogi głównej",
+       x = "Dostęp do drogi głównej",
+       y = "Liczba nieruchomości") +
   theme_minimal()
+
 ```
-
-Zmiana zmiennych na kategorie, jeśli nie są już ustawione
-
+c) Liczba nieruchomości z klimatyzacją (airconditioning):
 ```{r}
-data <- data %>%
-  mutate(
-    mainroad = as.factor(mainroad),
-    prefarea = as.factor(prefarea),
-    airconditioning = as.factor(airconditioning),
-    guestroom = as.factor(guestroom),
-    basement = as.factor(basement),
-    hotwaterheating = as.factor(hotwaterheating),
-    furnishingstatus = as.factor(furnishingstatus)
-  )
-```
-
-```{r}
-ggplot(data = data, aes(x = mainroad, y = price, fill = mainroad)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_manual(values = c("darkgreen", "yellow")) +
-  labs(
-    title = "Cena nieruchomości w zależności od obecności głównej drogi",
-    x = "Główna droga (0 = brak, 1 = obecność)",
-    y = "Cena (zł)",
-    fill = "Główna droga"
-  ) +
+# Histogram liczby nieruchomości z klimatyzacją
+ggplot(data_imputed, aes(x = airconditioning)) +
+  geom_bar(fill = "cyan", color = "black", alpha = 0.8) +
+  labs(title = "Liczba nieruchomości z klimatyzacją",
+       x = "Klimatyzacja",
+       y = "Liczba nieruchomości") +
   theme_minimal()
+
+```
+3. Wizualizacja rozkładów
+a) Wykres rozkładu powierzchni (area) z podziałem na obecność klimatyzacji (airconditioning).
+```{r}
+# Wykres gęstości powierzchni z podziałem na klimatyzację
+ggplot(data_imputed, aes(x = area, fill = airconditioning)) +
+  geom_density(alpha = 0.6) +
+  scale_fill_manual(values = c("yes" = "green", "no" = "orange")) +
+  labs(title = "Rozkład powierzchni w zależności od klimatyzacji",
+       x = "Powierzchnia (m2)",
+       y = "Gęstość",
+       fill = "Klimatyzacja") +
+  theme_minimal()
+
+```
+b) Rozkład cen (price) z podziałem na status umeblowania (furnishingstatus):
+```{r}
+# Rozkład cen z podziałem na umeblowanie
+ggplot(data_imputed, aes(x = price, fill = furnishingstatus)) +
+  geom_density(alpha = 0.6) +
+  scale_fill_manual(values = c("furnished" = "purple", "semi-furnished" = "pink", "unfurnished" = "grey")) +
+  labs(title = "Rozkład cen w zależności od statusu umeblowania",
+       x = "Cena (PLN)",
+       y = "Gęstość",
+       fill = "Status umeblowania") +
+  theme_minimal()
+
+```
+c) Rozkład liczby parkingów (parking):
+```{r}
+# Rozkład liczby parkingów
+ggplot(data_imputed, aes(x = parking)) +
+  geom_histogram(binwidth = 1, fill = "lightblue", color = "black", alpha = 0.8) +
+  labs(title = "Rozkład liczby parkingów",
+       x = "Liczba parkingów",
+       y = "Liczba nieruchomości") +
+  theme_minimal()
+
+```
+4. Wizualizacja proporcji
+a) Wykres kołowy dla statusu umeblowania (furnishingstatus).
+```{r}
+# Proporcje statusu umeblowania
+library(dplyr)
+
+data_imputed %>%
+  count(furnishingstatus) %>%
+  ggplot(aes(x = "", y = n, fill = furnishingstatus)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  scale_fill_manual(values = c("furnished" = "purple", "semi-furnished" = "pink", "unfurnished" = "grey")) +
+  labs(title = "Proporcja statusu umeblowania",
+       fill = "Status umeblowania") +
+  theme_void()
+
+```
+b) Proporcje dostępu do piwnicy (basement):
+```{r}
+# Wykres proporcji piwnic
+data_imputed %>%
+  count(basement) %>%
+  ggplot(aes(x = "", y = n, fill = basement)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  scale_fill_manual(values = c("yes" = "blue", "no" = "gray")) +
+  labs(title = "Proporcja nieruchomości z piwnicą",
+       fill = "Piwnica") +
+  theme_void()
+
+```
+c) Proporcja nieruchomości z ogrzewaniem wody (hotwaterheating):
+```{r}
+# Wykres proporcji ogrzewania wody
+data_imputed %>%
+  count(hotwaterheating) %>%
+  ggplot(aes(x = "", y = n, fill = hotwaterheating)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  scale_fill_manual(values = c("yes" = "green", "no" = "red")) +
+  labs(title = "Proporcja nieruchomości z ogrzewaniem wody",
+       fill = "Ogrzewanie wody") +
+  theme_void()
+
 ```
 
-```{r}
-ggplot(data = data, aes(x = prefarea, y = price, fill = prefarea)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_manual(values = c("skyblue", "orange")) +
-  labs(
-    title = "Cena nieruchomości w zależności od preferowanej lokalizacji",
-    x = "Preferowana lokalizacja (0 = brak, 1 = obecność)",
-    y = "Cena (zł)",
-    fill = "Preferowana lokalizacja"
-  ) +
-  theme_minimal()
-```
 
-```{r}
-ggplot(data = data, aes(x = airconditioning, y = price, fill = airconditioning)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_manual(values = c("blue", "red")) +
-  labs(
-    title = "Cena nieruchomości w zależności od klimatyzacji",
-    x = "Klimatyzacja (0 = brak, 1 = obecność)",
-    y = "Cena (zł)",
-    fill = "Klimatyzacja"
-  ) +
-  theme_minimal()
-```
 
-```{r}
-ggplot(data = data, aes(x = guestroom, y = price, fill = guestroom)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_manual(values = c("purple", "green")) +
-  labs(
-    title = "Cena nieruchomości w zależności od pokoju gościnnego",
-    x = "Pokój gościnny (0 = brak, 1 = obecność)",
-    y = "Cena (zł)",
-    fill = "Pokój gościnny"
-  ) +
-  theme_minimal()
-```
-
-```{r}
-ggplot(data = data, aes(x = basement, y = price, fill = basement)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_manual(values = c("grey", "brown")) +
-  labs(
-    title = "Cena nieruchomości w zależności od piwnicy",
-    x = "Piwnica (0 = brak, 1 = obecność)",
-    y = "Cena (zł)",
-    fill = "Piwnica"
-  ) +
-  theme_minimal()
-```
-
-```{r}
-ggplot(data = data, aes(x = hotwaterheating, y = price, fill = hotwaterheating)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_manual(values = c("cyan", "pink")) +
-  labs(
-    title = "Cena nieruchomości w zależności od ogrzewania ciepłą wodą",
-    x = "Ogrzewanie ciepłą wodą (0 = brak, 1 = obecność)",
-    y = "Cena (zł)",
-    fill = "Ogrzewanie"
-  ) +
-  theme_minimal()
-```
-
-```{r}
-ggplot(data = data, aes(x = furnishingstatus, y = price, fill = furnishingstatus)) +
-  geom_boxplot(alpha = 0.7) +
-  scale_fill_brewer(palette = "Set2") +
-  labs(
-    title = "Cena nieruchomości w zależności od statusu umeblowania",
-    x = "Status umeblowania",
-    y = "Cena (zł)",
-    fill = "Umeblowanie"
-  ) +
-  theme_minimal()
