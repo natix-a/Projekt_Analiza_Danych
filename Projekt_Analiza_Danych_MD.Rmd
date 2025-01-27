@@ -364,27 +364,24 @@ Kolejnym etapem jest normalizacja zmiennych numerycznych, takich jak cena, powie
 
 ```{r}
 minmax <- function(data, columns_to_normalize) {
- 
+  # Sprawdzenie, czy podane kolumny istnieją w danych
   missing_cols <- setdiff(columns_to_normalize, colnames(data))
   if (length(missing_cols) > 0) {
     stop(paste("Nie znaleziono kolumn:", paste(missing_cols, collapse = ", ")))
   }
   
-  data_normalized <- data %>%
+  # Normalizacja wybranych kolumn
+  data_imputed <- data %>%
     mutate(across(all_of(columns_to_normalize), 
-                  ~ (.-min(., na.rm = TRUE)) / (max(., na.rm = TRUE) - min(., na.rm = TRUE)),
+                  ~ ifelse(all(is.na(.)), NA,  # Jeśli wszystkie wartości NA, zwróć NA
+                           ifelse((max(., na.rm = TRUE) - min(., na.rm = TRUE)) == 0, 
+                                  0,  # Jeśli brak rozstępu, przypisz 0
+                                  (.-min(., na.rm = TRUE)) / (max(., na.rm = TRUE) - min(., na.rm = TRUE)))),
                   .names = "norm_{.col}"))
   
-  return(data_normalized)
+  return(data_imputed)
 }
 
-columns_to_normalize <- c("price", "area", "bedrooms", "bathrooms", "stories", "parking")
-
-str(data_imputed)
-
-data_imputed <- minmax(data, columns_to_normalize)
-
-head(data_imputed)
 ```
 Wizualizacja danych
 1. Mapowanie danych (wykresy)
@@ -493,16 +490,16 @@ data_imputed %>%
 ```
 b) Proporcje dostępu do piwnicy (basement):
 ```{r}
-# Wykres proporcji piwnic
 data_imputed %>%
   count(basement) %>%
   ggplot(aes(x = "", y = n, fill = basement)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
-  scale_fill_manual(values = c("yes" = "blue", "no" = "gray")) +
+  scale_fill_manual(values = c("TRUE" = "blue", "FALSE" = "gray")) +
   labs(title = "Proporcja nieruchomości z piwnicą",
        fill = "Piwnica") +
   theme_void()
+
 
 ```
 c) Proporcja nieruchomości z ogrzewaniem wody (hotwaterheating):
@@ -513,7 +510,7 @@ data_imputed %>%
   ggplot(aes(x = "", y = n, fill = hotwaterheating)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
-  scale_fill_manual(values = c("yes" = "green", "no" = "red")) +
+  scale_fill_manual(values = c("TRUE" = "green", "FALSE" = "red")) +
   labs(title = "Proporcja nieruchomości z ogrzewaniem wody",
        fill = "Ogrzewanie wody") +
   theme_void()
