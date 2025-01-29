@@ -24,6 +24,18 @@ Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, do
 
 Plik: agencja_nieruchomosci
 
+Wstęp
+
+### Wstęp do projektu
+
+W ramach niniejszego projektu przeprowadzono kompleksową analizę danych dotyczących rynku nieruchomości, wykorzystując zaawansowane techniki **Data Wranglingu**, **wizualizacji danych** oraz **analizy opisowej**. Celem projektu było zrozumienie kluczowych czynników wpływających na wartość i atrakcyjność nieruchomości, a także identyfikacja trendów i zależności występujących w analizowanym zbiorze danych.
+
+Proces **Data Wranglingu** obejmował oczyszczanie, transformację i przygotowanie danych do dalszej analizy. Dzięki temu udało się uzyskać spójny i wysokiej jakości zbiór danych, który stanowił podstawę dla kolejnych etapów projektu. Następnie, wykorzystując narzędzia do **wizualizacji danych**, stworzono szereg wykresów i grafik, które pozwoliły na przejrzyste przedstawienie zależności między różnymi zmiennymi, takimi jak cena, powierzchnia, lokalizacja, liczba sypialni, dostęp do infrastruktury oraz standard wyposażenia.
+
+**Analiza opisowa** koncentrowała się na interpretacji uzyskanych wizualizacji, co pozwoliło na wyciągnięcie istotnych wniosków dotyczących rynku nieruchomości. W szczególności, zidentyfikowano czynniki, takie jak lokalizacja w preferowanych obszarach, dostęp do drogi głównej, obecność klimatyzacji, status umeblowania oraz funkcjonalność nieruchomości, które mają znaczący wpływ na ich wartość i atrakcyjność.
+
+Projekt ten nie tylko dostarcza cennych informacji na temat rynku nieruchomości, ale również demonstruje, jak efektywne wykorzystanie technik analizy danych może prowadzić do głębszego zrozumienia złożonych zjawisk rynkowych. Wyniki analizy mogą stanowić cenne źródło informacji dla inwestorów, deweloperów oraz nabywców, umożliwiając bardziej świadome podejmowanie decyzji inwestycyjnych i rynkowych.
+
 ```{r setup, include=FALSE}
 ## Global optionsuuuuuu
 knitr::opts_chunk$set(cache = TRUE)
@@ -508,7 +520,6 @@ ggarrange(density.p, stable.p, text.p,
           heights = c(1, 0.5, 0.3))
 ```
 
-```
 ```{r boxplot2, echo=FALSE}
 #Ggplot2 pozwala na pokazanie średniej wartości dla każdej grupy za pomocą funkcji "**stat_summary()**. Nie musisz już obliczać wartości średnich przed tworzeniem wykresu!
 
@@ -529,7 +540,6 @@ ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
  geom_jitter() +
     facet_grid(~furnishingstatus) +
     scale_fill_brewer(palette="Set1")
-
 ```
 
 ```{rfacet1, echo=FALSE}
@@ -604,7 +614,6 @@ inline_plot <- data.frame(hotwaterheating = c(TRUE, FALSE), boxplot = "", histog
 
 ```
 
-```
 #Ok, teraz w końcu podsumujemy podstawowe miary tendencji centralnej dla cen według dzielnic/typów budynków używając pakietu '***kable***'. Możesz dostosować swój raport końcowy do własnych potrzeb. Zobacz kilka podpowiedzi [tutaj](https://cran.r-project.org/web/packages/qwraps2/vignettes/summary-statistics.html).
 
 
@@ -617,13 +626,19 @@ library(ggplot2)
 
 ggplot(data_imputed, aes(x = area, y = price, color = prefarea)) +
   geom_point(size = 3, alpha = 0.7) +
-  scale_color_manual(values = c("yes" = "blue", "no" = "red")) +
+  scale_color_manual(values = c("TRUE" = "blue", "FALSE" = "red")) +
   labs(title = "Cena vs. Powierzchnia z podziałem na preferowaną lokalizację",
        x = "Powierzchnia (m2)",
        y = "Cena (PLN)") +
   theme_minimal()
-
 ```
+Wykres przedstawia zależność między ceną nieruchomości a ich powierzchnią, z uwzględnieniem podziału na preferowane obszary. Na osi pionowej znajduje się cena w PLN, a na osi poziomej powierzchnia w metrach kwadratowych. Wartości ceny wahają się od 2,500,000 PLN do 12,500,000 PLN, podczas gdy powierzchnia mieści się w zakresie od 0 do 16,000 m².
+Wykres wskazuje na ogólną tendencję wzrostu ceny wraz ze wzrostem powierzchni, co jest zgodne z oczekiwaniami.
+Punkty danych są podzielone na dwie kategorie: prefarea = TRUE i prefarea = FALSE. Można zauważyć, że nieruchomości zlokalizowane w preferowanych obszarach (prefarea = TRUE) mają tendencję do osiągania wyższych cen przy podobnej powierzchni w porównaniu do nieruchomości z obszarów niepreferowanych.
+
+Wnioski:
+Lokalizacja w preferowanym obszarze ma istotny wpływ na cenę nieruchomości, co sugeruje, że czynniki lokalizacyjne są kluczowe w wycenie nieruchomości.
+
 2. Wizualizacja ilości
 a) Histogram rozkładu liczby sypialni (bedrooms).
 ```{r}
@@ -634,8 +649,14 @@ ggplot(data_imputed, aes(x = bedrooms)) +
        x = "Liczba sypialni",
        y = "Liczba nieruchomości") +
   theme_minimal()
-
 ```
+Wykres przedstawia rozkład liczby sypialni w analizowanych nieruchomościach. Na osi pionowej znajduje się liczba nieruchomości, a na osi poziomej liczba sypialni.
+Większość nieruchomości posiada od 2 do 4 sypialni, co wskazuje na dominację nieruchomości o średniej wielkości.
+Nieruchomości z 1 sypialnią lub więcej niż 4 sypialnie są znacznie mniej liczne.
+
+Wnioski:
+Rozkład ten sugeruje, że rynek nieruchomości jest zdominowany przez mieszkania i domy o średniej wielkości, co może odzwierciedlać preferencje nabywców.
+
 b) Liczba nieruchomości w zależności od dostępu do drogi głównej (mainroad):
 ```{r}
 # Histogram liczby nieruchomości z dostępem do drogi głównej
@@ -645,33 +666,51 @@ ggplot(data_imputed, aes(x = mainroad)) +
        x = "Dostęp do drogi głównej",
        y = "Liczba nieruchomości") +
   theme_minimal()
-
 ```
+Wykres przedstawia liczbę nieruchomości z dostępem do drogi głównej, podzielonych na kategorie TRUE (dostęp) i FALSE (brak dostępu).
+Większość nieruchomości posiada dostęp do drogi głównej, co może wpływać na ich atrakcyjność i cenę.
+Nieruchomości bez dostępu do drogi głównej stanowią mniejszość.
+
+Wnioski:
+Dostęp do drogi głównej jest istotnym czynnikiem wpływającym na wartość nieruchomości, co może być związane z wygodą dojazdu i ogólną dostępnością.
+
 c) Liczba nieruchomości z klimatyzacją (airconditioning):
 ```{r}
 # Histogram liczby nieruchomości z klimatyzacją
 ggplot(data_imputed, aes(x = airconditioning)) +
-  geom_bar(fill = "cyan", color = "black", alpha = 0.8) +
+  geom_bar(fill = "cyan", color = "black ", alpha = 0.8) +
   labs(title = "Liczba nieruchomości z klimatyzacją",
        x = "Klimatyzacja",
        y = "Liczba nieruchomości") +
   theme_minimal()
-
 ```
+Wykres przedstawia liczbę nieruchomości wyposażonych w klimatyzację, podzielonych na kategorie TRUE (klimatyzacja) i FALSE (brak klimatyzacji).
+Większość nieruchomości nie posiada klimatyzacji, co może odzwierciedlać specyfikę lokalnego rynku nieruchomości.
+Nieruchomości z klimatyzacją stanowią mniejszość, co może wpływać na ich wyższą cenę.
+
+Wnioski:
+Klimatyzacja jest rzadkością w analizowanym zbiorze nieruchomości, co może sugerować, że jest to czynnik różnicujący i wpływający na wartość nieruchomości.
+
 3. Wizualizacja rozkładów
 a) Wykres rozkładu powierzchni (area) z podziałem na obecność klimatyzacji (airconditioning).
 ```{r}
 # Wykres gęstości powierzchni z podziałem na klimatyzację
 ggplot(data_imputed, aes(x = area, fill = airconditioning)) +
   geom_density(alpha = 0.6) +
-  scale_fill_manual(values = c("yes" = "green", "no" = "orange")) +
+  scale_fill_manual(values = c("TRUE" = "green", "FALSE" = "orange")) +
   labs(title = "Rozkład powierzchni w zależności od klimatyzacji",
        x = "Powierzchnia (m2)",
        y = "Gęstość",
        fill = "Klimatyzacja") +
   theme_minimal()
-
 ```
+Wykres przedstawia rozkład powierzchni nieruchomości w zależności od obecności klimatyzacji. Na osi pionowej znajduje się gęstość, a na osi poziomej powierzchnia w metrach kwadratowych.
+Nieruchomości z klimatyzacją mają tendencję do większej powierzchni w porównaniu do nieruchomości bez klimatyzacji.
+Rozkład powierzchni dla nieruchomości z klimatyzacją jest bardziej rozproszony, co może wskazywać na większą różnorodność w tej kategorii.
+
+Wnioski:
+Klimatyzacja jest częściej spotykana w większych nieruchomościach, co może sugerować, że jest to cecha charakterystyczna dla nieruchomości o wyższym standardzie.
+
 b) Rozkład cen (price) z podziałem na status umeblowania (furnishingstatus):
 ```{r}
 # Rozkład cen z podziałem na umeblowanie
@@ -683,8 +722,14 @@ ggplot(data_imputed, aes(x = price, fill = furnishingstatus)) +
        y = "Gęstość",
        fill = "Status umeblowania") +
   theme_minimal()
-
 ```
+Wykres przedstawia rozkład cen nieruchomości w zależności od ich statusu umeblowania. Na osi pionowej znajduje się gęstość, a na osi poziomej cena w PLN. Status umeblowania jest podzielony na trzy kategorie: furnished (umeblowane), semi-furnished (częściowo umeblowane) i unfurnished (nieumeblowane).
+Nieruchomości umeblowane (furnished) mają tendencję do osiągania wyższych cen w porównaniu do nieruchomości częściowo umeblowanych (semi-furnished) i nieumeblowanych (unfurnished).
+Rozkład cen dla nieruchomości nieumeblowanych jest bardziej skoncentrowany w niższych przedziałach cenowych.
+
+Wnioski:
+Status umeblowania ma istotny wpływ na cenę nieruchomości, co sugeruje, że nabywcy są skłonni płacić więcej za nieruchomości gotowe do zamieszkania.
+
 c) Rozkład liczby parkingów (parking):
 ```{r}
 # Rozkład liczby parkingów
@@ -694,8 +739,14 @@ ggplot(data_imputed, aes(x = parking)) +
        x = "Liczba parkingów",
        y = "Liczba nieruchomości") +
   theme_minimal()
-
 ```
+Wykres przedstawia rozkład liczby parkingów dostępnych w analizowanych nieruchomościach. Na osi poziomej znajduje się liczba parkingów, a na osi pionowej liczba nieruchomości.
+Większość nieruchomości posiada 1 lub 2 miejsca parkingowe, co wskazuje na standardową dostępność parkingów.
+Nieruchomości z 3 miejscami parkingowymi są rzadkością.
+
+Wnioski:
+Liczba miejsc parkingowych jest istotnym czynnikiem wpływającym na atrakcyjność nieruchomości, szczególnie w obszarach o ograniczonej dostępności parkingów.
+
 4. Wizualizacja proporcji
 a) Wykres kołowy dla statusu umeblowania (furnishingstatus).
 ```{r}
@@ -711,8 +762,14 @@ data_imputed %>%
   labs(title = "Proporcja statusu umeblowania",
        fill = "Status umeblowania") +
   theme_void()
-
 ```
+Wykres przedstawia proporcje nieruchomości według statusu umeblowania: furnished, semi-furnished i unfurnished.
+Największy odsetek nieruchomości to te nieumeblowane (unfurnished), co może odzwierciedlać preferencje nabywców do personalizacji przestrzeni.
+Nieruchomości umeblowane (furnished) stanowią mniejszość, ale są bardziej pożądane ze względu na wyższą cenę.
+
+Wnioski:
+Rynek nieruchomości jest zdominowany przez nieruchomości nieumeblowane, co może wpływać na strategie marketingowe i wycenę nieruchomości.
+
 b) Proporcje dostępu do piwnicy (basement):
 ```{r}
 data_imputed %>%
@@ -724,9 +781,14 @@ data_imputed %>%
   labs(title = "Proporcja nieruchomości z piwnicą",
        fill = "Piwnica") +
   theme_void()
-
-
 ```
+Wykres przedstawia proporcje nieruchomości z piwnicą (TRUE) i bez piwnicy (FALSE).
+Większość nieruchomości posiada piwnicę, co może zwiększać ich funkcjonalność i atrakcyjność.
+Nieruchomości bez piwnicy stanowią mniejszość.
+
+Wnioski:
+Obecność piwnicy jest istotnym czynnikiem wpływającym na wartość nieruchomości, szczególnie w kontekście dodatkowej przestrzeni magazynowej.
+
 c) Proporcja nieruchomości z ogrzewaniem wody (hotwaterheating):
 ```{r}
 # Wykres proporcji ogrzewania wody
@@ -739,8 +801,25 @@ data_imputed %>%
   labs(title = "Proporcja nieruchomości z ogrzewaniem wody",
        fill = "Ogrzewanie wody") +
   theme_void()
-
 ```
+Wykres przedstawia proporcje nieruchomości z ogrzewaniem wody (TRUE) i bez ogrzewania wody (FALSE).
+Większość nieruchomości jest wyposażona w system ogrzewania wody, co jest standardem w nowoczesnych nieruchomościach.
+Nieruchomości bez ogrzewania wody stanowią mniejszość.
+
+Wnioski:
+Ogrzewanie wody jest powszechnym i oczekiwanym udogodnieniem, które wpływa na komfort użytkowania nieruchomości.
+
+### Podsumowanie analizy wizualizacji danych
+
+Przeprowadzona analiza wizualizacji danych wykonanych w R-Studio dostarcza kompleksowego obrazu rynku nieruchomości, uwzględniającego różnorodne czynniki wpływające na ich wartość i atrakcyjność. Wnioski płynące z analizy wskazują, że kluczowe determinanty cen nieruchomości obejmują lokalizację, dostęp do infrastruktury, standard wyposażenia oraz funkcjonalność.
+
+Lokalizacja w preferowanych obszarach znacząco wpływa na wyższą wartość nieruchomości, co podkreśla wagę czynników geograficznych i społecznych. Dostęp do drogi głównej oraz liczba miejsc parkingowych są istotnymi elementami zwiększającymi atrakcyjność nieruchomości, szczególnie w kontekście wygody i dostępności.
+
+Standard wyposażenia, taki jak klimatyzacja czy ogrzewanie wody, również odgrywa ważną rolę w kształtowaniu cen. Nieruchomości wyposażone w te udogodnienia są postrzegane jako bardziej wartościowe, co odzwierciedla preferencje nabywców dotyczące komfortu użytkowania. Status umeblowania dodatkowo różnicuje rynek, z nieruchomościami umeblowanymi osiągającymi wyższe ceny, co sugeruje, że gotowość do zamieszkania jest istotnym atutem.
+
+Funkcjonalność nieruchomości, w tym obecność piwnicy, wpływa na ich praktyczność i atrakcyjność, szczególnie w kontekście dodatkowej przestrzeni użytkowej. Rozkład liczby sypialni wskazuje na dominację nieruchomości o średniej wielkości, co może odzwierciedlać preferencje nabywców dotyczące przestrzeni mieszkalnej.
+
+Podsumowując, analiza wizualizacji danych pozwala na zidentyfikowanie kluczowych czynników kształtujących rynek nieruchomości. Wnioski te mogą stanowić cenne źródło informacji dla inwestorów, deweloperów oraz nabywców, umożliwiając bardziej świadome podejmowanie decyzji inwestycyjnych i rynkowych.
 
 ## Wnioskowanie statystyczne 
 
