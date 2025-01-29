@@ -42,6 +42,8 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 
 ```{r}
+install.packages("qwraps2")
+install.packages("psych")
 install.packages("kableExtra")
 install.packages("ggstatsplot")
 library(dplyr)
@@ -56,7 +58,8 @@ library(classInt)
 library(kableExtra)
 library(ggpubr)
 library(ggstatsplot) 
-
+library(psych)
+library(qwraps2)
 ```
 
 ```{r}
@@ -229,7 +232,7 @@ correct_with_rules <- function(data, rules) {
 
 ### Analiza wartości odstających dla zmiennej 'price'
 
-Identyfikujemy wartości odstające w zmiennej `price` Następnie znajdujemy indeksy wierszy zawierających te wartości odstające za pomocą funkcji `which`. Używamy wykresu pudełkowegp do wizualizacji zmiennej `price`, gdzie outliery są automatycznie zaznaczane na wykresie. W kolejnych krokach modyfikujemy wartości w drugiej kolumnie dla wierszy z wartościami odstającymi w `price`, dzieląc je przez 10 w celu ich zmniejszenia. Ten proces pozwala nam spojrzeć na przeciętne wartości dla danych o sprzedaży mieszkań. Jeśli chodzi o cenę jest ona zmienną mocno subiektywną. Niekoniecznie wynika z faktycznej wartości produktu ale np. z bardzo konkretnej lokalizacji. Ponieważ w naszych danych nie mamy informacji o np. wspomnianej konkretnej lokalizacji nie możemy wziąć jej pod uwagę przy dalaszej interpretacji ceny. Dane bez wprowqadzonych modyfikacji zostawiamy jako 'data_with_outliars'dla celów porównawczych.
+Identyfikujemy wartości odstające w zmiennej `price` Następnie znajdujemy indeksy wierszy zawierających te wartości odstające za pomocą funkcji `which`. Używamy wykresu pudełkowegp do wizualizacji zmiennej `price`, gdzie outliery są automatycznie zaznaczane na wykresie. W kolejnych krokach modyfikujemy wartości w drugiej kolumnie dla wierszy z wartościami odstającymi w `price`, dzieląc je przez 10 w celu ich zmniejszenia. Ten proces pozwala nam spojrzeć na przeciętne wartości dla danych o sprzedaży mieszkań. Jeśli chodzi o cenę jest ona zmienną mocno subiektywną. Niekoniecznie wynika z faktycznej wartości produktu ale np. z bardzo konkretnej lokalizacji. Ponieważ w naszych danych nie mamy informacji o np. wspomnianej konkretnej lokalizacji nie możemy wziąć jej pod uwagę przy dalaszej interpretacji ceny. Dane bez wprowadzonych modyfikacji zostawiamy jako 'data_with_outliars'dla celów porównawczych.
 
 ```{r}
 outliers <- boxplot.stats(data$price)$out
@@ -404,12 +407,12 @@ minmax <- function(data, columns_to_normalize) {
 #Analiza opisowa 
 
 ```{r table, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-
+#Tworzenie tabeli częstości dla cen
 tabela1<-freq(limits,type="html")
 
 ```
 
-
+## Tabele liczności oraz TAI
 ```{r}
 str(data_imputed$price)
 as.numeric(data_imputed$price)
@@ -418,10 +421,8 @@ range(data_imputed$price, na.rm=TRUE)
 max(data_imputed$price)-min(data_imputed$price, na.rm = TRUE)
 
 etykiety<-c("1.750.000-2.750.000", "2.750.000-3.750.000", "3.750.000-4.750.000", "4.750.000-5.750.000", "5.750.000-6.750.000", "6.750.000-7.750.000", "7.750.000-8.750.000", "8.750.000-9.750.000", "9.750.000-10.750.000", "10.750.000-11.750.000")
-limits <- cut(data_imputed$price,seq(1750000,12250000,by=1000000), labels=etykiety)  #setting limits of our classes
+limits <- cut(data_imputed$price,seq(1750000,12250000,by=1000000), labels=etykiety)  
 table1<-table(limits)
-#finally grouping our prices
-#ramka danych 
 klasy <- as.data.frame(table1)
 klasy
 klasy$rel_freq <- prop.table(klasy$Freq)
@@ -431,7 +432,7 @@ names(klasy) <- c("limits", "freq", "rel_freq", "cum_freq")
 View(klasy)
 
 ```
-
+## Podstawowe wykresy
 #histogram
 
 ```{r}
@@ -444,30 +445,27 @@ print(filtered_prices)
 price_range <- range(filtered_prices, na.rm = TRUE)
 print(price_range)
 
+# Definiowanie przerw dla histogramu
 breaks <- seq(floor(price_range[1] / 1000000) * 1000000, ceiling(price_range[2] / 1000000) * 1000000, by = 1000000)
 print(breaks)
-
+# Rysowanie histogramu i gęstości
 hist(filtered_prices, prob = TRUE, breaks = breaks, main = "Price", sub = "in PLN")
 lines(density(filtered_prices), col = 2)
-
-
 ```
-#robimy jenks test - tabular accuracy index
 
 
 ```{r}
+# Tworzenie tabeli
 kbl(table1, caption = "Ceny mieszkań") %>%
   kable_material(c("striped", "hover"))
 tab1<-classIntervals(data_imputed$price,n=10,style="fixed",fixedBreaks=seq(1750000,12250000,by=1000000))
 price_range <- range(data_imputed$price, na.rm=TRUE)
 print(price_range)
-#tabular accuracy index
+# Obliczenie wskaźnika dokładności tabeli (TAI)
 jenks.tests(tab1)
 
 #Wskaźnik TAI jest dość wysoki. 0,84 oznacza, że możemy zaakceptować zaproponowaną konstrukcję tablicy częstości.
 ```
-#TAI jest jakiśtam wynik - jeśli jest wysoki to znaczy że jest reliable 
-dodatkowy wykres zrobimt dodajacy kolorki 
 
 ```{r}
 tab1<-classIntervals(data_imputed$price,n=10,style="fixed",fixedBreaks=seq(1750000,12250000,by=1000000))
@@ -478,7 +476,7 @@ plot(tab1,pal=pcol,ylab='Cumulative %')
 ```
 
 ```{r histogram, echo=FALSE}
-# Zastosowanie reguły Freedman/Diaconis s.120 ("Algorytm, który automatycznie wybiera szerokość i położenie bloków w oparciu o wielkość próby i rozrzut danych - Zbadaj heterogeniczność rozkładu prezentując dane w podziale na grupy"
+# Zastosowanie reguły Freedman/Diaconis do tworzenia histogramu
 
 hist(data_imputed$price, breaks="FD", col="green", probability = TRUE,
      main="Ceny mieszkań")
@@ -490,27 +488,25 @@ legend("topright", legend=c("furnished", "semi-furnished", "unfurnished"),
 
 ```
 ```{r boxplot, echo=FALSE}
-boxplot(data_imputed$price~data_imputed$furnishingstatus)
-
+# Tworzenie wykresu pudełkowego dla cen według statusu umeblowania
+boxplot(data_imputed$price ~ data_imputed$furnishingstatus)
 ```
 
 ```{r histogram2, echo=FALSE}
-# Density plot of "price_PLN"
-#::::::::::::::::::::::::::::::::::::::
+#Tworzenie wykresu gęstości dla cen z uwzględnieniem statusu umeblowania
 density.p <- ggdensity(data_imputed, x = "price", 
                        fill = "furnishingstatus", palette = "jco")+
   stat_overlay_normal_density(color = "red", linetype = "dashed")
 View(density.p)
 
-# Liczymy statystyki wg dzielnic:
+# Liczymy statystyki wg statusu umeblowania
 stable <- desc_statby(data_imputed, measure.var = "price",
                       grps = "furnishingstatus")
 stable <- stable[, c("furnishingstatus", "length", "mean", "sd")]
-# Wykres, szablon "medium orange":
+# Tabela tekstowa z wynikami
 stable.p <- ggtexttable(stable, rows = NULL, 
                         theme = ttheme("mOrange"))
-# Podpisujemy wykres:
-#::::::::::::::::::::::::::::::::::::::
+
 text <- paste("Ceny mieszkań wg statusu umeblowania.",
                sep = " ")
 text.p <- ggparagraph(text = text, face = "italic", size = 11, color = "black")
@@ -521,19 +517,7 @@ ggarrange(density.p, stable.p, text.p,
 ```
 
 ```{r boxplot2, echo=FALSE}
-#Ggplot2 pozwala na pokazanie średniej wartości dla każdej grupy za pomocą funkcji "**stat_summary()**. Nie musisz już obliczać wartości średnich przed tworzeniem wykresu!
-
-ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
-    geom_boxplot(alpha=0.7) +
-    stat_summary(fun="mean", geom="point", shape=20, size=5, color="red", fill="red") +
- geom_jitter() +
-    facet_grid(~furnishingstatus) +
-    scale_fill_brewer(palette="Set1")
-
-```
-```{r boxplot2, echo=FALSE}
-#Ggplot2 pozwala na pokazanie średniej wartości dla każdej grupy za pomocą funkcji "**stat_summary()**. Nie musisz już obliczać wartości średnich przed tworzeniem wykresu!
-
+# Tworzenie wykresu pudełkowego z oznaczeniem średnich wartości
 ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
     geom_boxplot(alpha=0.7) +
     stat_summary(fun="mean", geom="point", shape=20, size=5, color="red", fill="red") +
@@ -542,11 +526,8 @@ ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
     scale_fill_brewer(palette="Set1")
 ```
 
-```{rfacet1, echo=FALSE}
-## Grupowanie grafik
-
-#Faceting generuje małe wielokrotności, z których każda pokazuje inny podzbiór danych. Są one potężnym narzędziem do eksploracyjnej analizy danych: możesz szybko porównać wzorce w różnych częściach danych i zobaczyć czy są takie same czy różne. Przeczytaj więcej [tutaj](https://ggplot2-book.org/facet.html).
-
+```{r facet1, echo=FALSE}
+## Grupowanie wykresów według liczby pokoi
 plot1 <- ggplot(data_imputed, aes(x=bedrooms, price)) + 
   geom_abline() +
   geom_jitter(width = 0.1, height = 0.1) 
@@ -554,7 +535,7 @@ plot1 + facet_wrap(~ bedrooms)
 
 ```
 ```{r}
-#Przed automatycznym raportowaniem pełnej tabeli podsumowującej statystyki opisowe, tym razem Twoim celem jest zmierzenie tendencji centralnej rozkładu cen. Porównaj średnią, medianę i tryb wraz z miarami pozycyjnymi - kwantylami - według dzielnic i typów budynków lub liczby pokoi w mieszkaniu.
+# Porównanie średniej, mediany i kwantyli dla cen
 
 mean(data_imputed$price)
     median(data_imputed$price)
@@ -572,35 +553,21 @@ mean(data_imputed$price)
     
 ```
 ```{r kable_report, echo=FALSE}
-mieszkania_list <- split(mieszkania$price_PLN, mieszkania$rooms)
-inline_plot <- data.frame(rooms = c(1, 2, 3, 4), boxplot = "", histogram = "", line1 = "", line2 = "", points1 = "")
+#Tworzenie tabeli z wykresami dla różnych liczby pokoi
+data_imputed_list <- split(data_imputed$price, data_imputed$bedrooms)
+inline_plot <- data.frame(rooms = c(1, 2, 3, 4, 5, 6), boxplot = "", histogram = "", line1 = "", line2 = "", points1 = "")
   inline_plot %>%
   kbl(booktabs = TRUE) %>%
   kable_paper(full_width = FALSE) %>%
-  column_spec(2, image = spec_boxplot(mieszkania_list)) %>%
-  column_spec(3, image = spec_hist(mieszkania_list)) %>%
-  column_spec(4, image = spec_plot(mieszkania_list, same_lim = TRUE)) %>%
-  column_spec(5, image = spec_plot(mieszkania_list, same_lim = FALSE)) %>%
-  column_spec(6, image = spec_plot(mieszkania_list, type = "p"))
+  column_spec(2, image = spec_boxplot(data_imputed_list)) %>%
+  column_spec(3, image = spec_hist(data_imputed_list)) %>%
+  column_spec(4, image = spec_plot(data_imputed_list, same_lim = TRUE)) %>%
+  column_spec(5, image = spec_plot(data_imputed_list, same_lim = FALSE)) %>%
+  column_spec(6, image = spec_plot(data_imputed_list, type = "p"))
 
 ```
-
-```{r}
 ```{r kable_report, echo=FALSE}
-mieszkania_list <- split(data_imputed$price, data_imputed$bedrooms)
-inline_plot <- data.frame(rooms = c(1, 2, 3, 4), boxplot = "", histogram = "", line1 = "", line2 = "", points1 = "")
-  inline_plot %>%
-  kbl(booktabs = TRUE) %>%
-  kable_paper(full_width = FALSE) %>%
-  column_spec(2, image = spec_boxplot(mieszkania_list)) %>%
-  column_spec(3, image = spec_hist(mieszkania_list)) %>%
-  column_spec(4, image = spec_plot(mieszkania_list, same_lim = TRUE)) %>%
-  column_spec(5, image = spec_plot(mieszkania_list, same_lim = FALSE)) %>%
-  column_spec(6, image = spec_plot(mieszkania_list, type = "p"))
-
-```
-
-```{r kable_report, echo=FALSE}
+# Tworzenie tabeli z wykresami według ogrzewania wody
 mieszkania_list <- split(data_imputed$price, data_imputed$hotwaterheating)
 inline_plot <- data.frame(hotwaterheating = c(TRUE, FALSE), boxplot = "", histogram = "", line1 = "", line2 = "", points1 = "")
   inline_plot %>%
@@ -613,8 +580,29 @@ inline_plot <- data.frame(hotwaterheating = c(TRUE, FALSE), boxplot = "", histog
   column_spec(6, image = spec_plot(mieszkania_list, type = "p"))
 
 ```
+```{r kable_report2, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+raport <-
+  list("Cena" =
+       list("Min"= ~ min(data_imputed$price),
+            "Max"= ~ max(data_imputed$price),
+            "Kwartyl dolny"= ~ quantile(data_imputed$price,0.25),
+            "Mediana"= ~ round(median(data_imputed$price),2),
+            "Kwartyl górny"= ~ quantile(data_imputed$price,0.75),
+            "Średnia"= ~ round(mean(data_imputed$price),2),
+            "Odch. std."= ~ round(sd(data_imputed$price),2),
+            "IQR"= ~ round(iqr(data_imputed$price),2),
+            "Odchylenie ćwiartkowe"=~round(iqr(data_imputed$price)/2,2),
+            "Odch. std. w %"=~round((sd(data_imputed$price)/mean(data_imputed$price)),2),
+            "Odch. ćwiartkowe w %"=~round((iqr(data_imputed$price)/median(data_imputed$price)),2),
+            "Skośność"=~round(skew(data_imputed$price),2),
+            "Kurtoza"=~round(kurtosi(data_imputed$price),2)
+            ))
+tabela<-summary_table(data_imputed, summaries = raport, by = data_imputed$bedrooms)
 
-#Ok, teraz w końcu podsumujemy podstawowe miary tendencji centralnej dla cen według dzielnic/typów budynków używając pakietu '***kable***'. Możesz dostosować swój raport końcowy do własnych potrzeb. Zobacz kilka podpowiedzi [tutaj](https://cran.r-project.org/web/packages/qwraps2/vignettes/summary-statistics.html).
+```
+
+
+
 
 
 Wizualizacja danych
