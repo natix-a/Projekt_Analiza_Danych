@@ -30,7 +30,8 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 
 ```{r}
-
+install.packages("kableExtra")
+install.packages("ggstatsplot")
 library(dplyr)
 library(naniar)
 library(ggplot2)
@@ -42,6 +43,7 @@ library(xts)
 library(classInt)
 library(kableExtra)
 library(ggpubr)
+library(ggstatsplot) 
 
 ```
 
@@ -606,25 +608,6 @@ inline_plot <- data.frame(hotwaterheating = c(TRUE, FALSE), boxplot = "", histog
 #Ok, teraz w końcu podsumujemy podstawowe miary tendencji centralnej dla cen według dzielnic/typów budynków używając pakietu '***kable***'. Możesz dostosować swój raport końcowy do własnych potrzeb. Zobacz kilka podpowiedzi [tutaj](https://cran.r-project.org/web/packages/qwraps2/vignettes/summary-statistics.html).
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Wizualizacja danych
 1. Mapowanie danych (wykresy)
 Na przykładzie zależności między ceną (price) a powierzchnią (area).
@@ -759,5 +742,23 @@ data_imputed %>%
 
 ```
 
+## Wnioskowanie statystyczne 
+
+```{r}
+summary(data[, sapply(df, is.numeric)]) 
+```
+
+
+# Opis statystyczny zmiennych numerycznych 
+
+# Analiza różnic między grupami (price vs furnishingstatus) 
+
+Analiza zależności między zmiennymi (price vs area)
+
+# Macierz korelacji dla zmiennych numerycznych 
+
+# Wizualizacja proporcji zmiennej kategorycznej (furnishingstatus)
+
+## Podsumowanie wnioskowania statystycznego 
 
 
