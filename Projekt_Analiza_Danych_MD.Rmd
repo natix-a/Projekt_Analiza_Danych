@@ -152,10 +152,9 @@ Wizualizacja brakujących wartości
 vis_miss(data)
 ```
 
+## Porządkowanie struktury danych
 
-## Porządkowanie struktury danych 
-
-### Zmiana wartości (yes/no) na wartości (TRUE/FALSE) 
+### Zmiana wartości (yes/no) na wartości (TRUE/FALSE)
 
 ```{r}
 data$mainroad <- ifelse(data$mainroad == "yes", TRUE, 
@@ -193,7 +192,7 @@ violations_summary <- summary(violatedEdits(RULE, data))
 str(violations_summary)
 
 
-plot(violated)
+#plot(violated)
 
 ```
 
@@ -230,7 +229,7 @@ correct_with_rules <- function(data, rules) {
 }
 ```
 
-## Wartości odstające 
+## Wartości odstające
 
 ### Analiza wartości odstających dla zmiennej 'price'
 
@@ -294,12 +293,7 @@ for (col in logical_columns) {
 }
 ```
 
-Kolumna: mainroad, TRUE: 86.46%, FALSE: 13.54%
-Kolumna: guestroom, TRUE: 17.80%, FALSE: 82.20%
-Kolumna: basement, TRUE: 35.05%, FALSE: 64.95%
-Kolumna: hotwaterheating, TRUE: 4.59%, FALSE: 95.41%
-Kolumna: airconditioning, TRUE: 31.56%, FALSE: 68.44%
-Kolumna: prefarea, TRUE: 24.65%, FALSE: 75.35%
+Kolumna: mainroad, TRUE: 86.46%, FALSE: 13.54% Kolumna: guestroom, TRUE: 17.80%, FALSE: 82.20% Kolumna: basement, TRUE: 35.05%, FALSE: 64.95% Kolumna: hotwaterheating, TRUE: 4.59%, FALSE: 95.41% Kolumna: airconditioning, TRUE: 31.56%, FALSE: 68.44% Kolumna: prefarea, TRUE: 24.65%, FALSE: 75.35%
 
 Dodatkowo aby lepiej zobarzować dane pokazane w podsumowaniu tworzymy wykresy słupkowe dla podanych zmiennych
 
@@ -381,7 +375,8 @@ str(data_imputed)
 
 head(data_imputed)
 ```
-#Normalizacja zmiennych numerycznych 
+
+#Normalizacja zmiennych numerycznych
 
 Kolejnym etapem jest normalizacja zmiennych numerycznych, takich jak cena, powierzchnia, liczba sypialni, czy liczba miejsc parkingowych, co pozwala na przekształcenie danych do wspólnej skali bez utraty relatywnej informacji. Do tego celu wykorzystano metodę min-max scaling, która przekształca wartości w przedziale od 0 do 1, co ułatwia dalsze analizy statystyczne oraz modelowanie. Proces normalizacji zapewnia większą spójność danych i eliminuje wpływ różnych skal poszczególnych zmiennych na wyniki analizy.Dzięki zastosowanym technikom przetwarzania danych uzyskane wyniki pozwolą na dokładniejszą interpretację wpływu poszczególnych cech nieruchomości na ich wartość rynkową oraz na lepsze przygotowanie danych do wykorzystania w modelach predykcyjnych.
 
@@ -406,17 +401,24 @@ minmax <- function(data, columns_to_normalize) {
 }
 
 ```
-#Analiza opisowa 
+
+# Analiza opisowa
 
 ```{r table, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 #Tworzenie tabeli częstości dla cen
-tabela1<-table(limits)
 
-```
+### Tabele liczności oraz TAI
 
-## Tabele liczności oraz TAI
-```{r}
+#Analizujemy zmienność cen mieszkań w zbiorze danych. Po przekształceniu zmiennej price na typ numeryczny obliczamy jej zakres oraz rozstęp. Pozwala to określić przedział, w którym mieszczą się ceny nieruchomości oraz ich maksymalne i minimalne wartości.
+
+#Następnie grupujemy ceny mieszkań w przedziały co 1 milion złotych, co umożliwia identyfikację dominujących kategorii cenowych. Najwięcej mieszkań znajduje się w przedziale 2.750.000-3.750.000 zł oraz 3.750.000-4.750.000 zł, co sugeruje, że większość ofert dotyczy mieszkań o średnim poziomie cenowym w badanym zbiorze.
+
+#Obserwujemy również, że liczba mieszkań maleje wraz ze wzrostem ceny – nieruchomości powyżej 10 milionów złotych stanowią niewielką część rynku. Jest to zgodne z intuicją, ponieważ luksusowe apartamenty są mniej liczne niż standardowe mieszkania.
+
+#Obliczenie częstości względnych i skumulowanych pozwala lepiej zrozumieć strukturę cen. Możemy określić, jaki procent mieszkań mieści się w określonych przedziałach, co ułatwia interpretację dostępności mieszkań w różnych segmentach cenowych.
+
 str(data_imputed$price)
+colnames(data_imputed)
 as.numeric(data_imputed$price)
 data_imputed$price <- as.numeric(data_imputed$price)
 range(data_imputed$price, na.rm=TRUE)
@@ -434,8 +436,14 @@ names(klasy) <- c("limits", "freq", "rel_freq", "cum_freq")
 View(klasy)
 
 ```
+
 ## Podstawowe wykresy
+
 #histogram
+
+#Analizujemy rozkład cen mieszkań za pomocą histogramu oraz funkcji gęstości. Po usunięciu wartości brakujących (NA), sprawdzamy zakres cenowy, który wskazuje na minimalną i maksymalną wartość ceny mieszkań w zbiorze danych.
+
+
 
 ```{r}
 
@@ -454,19 +462,29 @@ print(breaks)
 hist(filtered_prices, prob = TRUE, breaks = breaks, main = "Price", sub = "in PLN")
 lines(density(filtered_prices), col = 2)
 ```
+#Histogram przedstawia liczbę mieszkań w różnych przedziałach cenowych, a dodatkowa linia gęstości (density()) pomaga zidentyfikować kształt rozkładu danych.
 
+#Na załączonym wykresie widzimy, że rozkład cen mieszkań jest prawostronnie skośny, co oznacza, że większość ofert dotyczy tańszych mieszkań, natomiast ceny luksusowych nieruchomości są bardziej rozproszone i występują rzadziej.
+
+#Najwięcej mieszkań znajduje się w przedziale około 3-5 mln zł, co jest zgodne z wcześniejszymi wynikami analizy tabeli częstości. Zauważamy również długi ogon rozkładu, wskazujący na obecność drogich nieruchomości, których ceny przekraczają 10 milionów złotych.
+
+#Tego rodzaju rozkład jest typowy dla rynku nieruchomości, gdzie większość ofert dotyczy mieszkań w standardowych przedziałach cenowych, a ceny ekskluzywnych nieruchomości są znacznie wyższe.
 
 ```{r}
 # Tworzenie tabeli
+### Analizujemy podział cen mieszkań na klasy, aby lepiej zrozumieć strukturę cenową na rynku. Tworzymy tabelę przedziałów cenowych z użyciem metody podziału na stałe klasy cenowe, co pozwala na czytelne przedstawienie częstości występowania mieszkań w określonych przedziałach.
 kbl(table1, caption = "Ceny mieszkań") %>%
   kable_material(c("striped", "hover"))
 tab1<-classIntervals(data_imputed$price,n=10,style="fixed",fixedBreaks=seq(1750000,12250000,by=1000000))
 price_range <- range(data_imputed$price, na.rm=TRUE)
 print(price_range)
 # Obliczenie wskaźnika dokładności tabeli (TAI)
+### Obliczamy również wskaźnik dokładności tabeli (Tabular Accuracy Index – TAI), który informuje nas, jak dobrze wybrane przedziały odzwierciedlają rzeczywisty rozkład danych. 
 jenks.tests(tab1)
 
-#Wskaźnik TAI jest dość wysoki. 0,84 oznacza, że możemy zaakceptować zaproponowaną konstrukcję tablicy częstości.
+#Wskaźnik TAI jest dość wysoki. 0,84 oznacza, że możemy zaakceptować zaproponowaną konstrukcję tablicy częstości, czyli możemy uznać ten podział za reprezentatywny dla zbioru danych.
+
+###Dodatkowo, wartość Goodness of Fit = 0,978 sugeruje, że klasyfikacja danych według wybranej metody pozwala na bardzo dobre odwzorowanie rzeczywistego rozkładu cen. Oznacza to, że analizowane przedziały cenowe są sensowne i dobrze opisują strukturę rynku mieszkań.
 ```
 
 ```{r}
@@ -489,6 +507,7 @@ legend("topright", legend=c("furnished", "semi-furnished", "unfurnished"),
        col=c(2,3), lty=1:2, horiz=FALSE, box.lty=0, cex=0.8)
 
 ```
+
 ```{r boxplot, echo=FALSE}
 # Tworzenie wykresu pudełkowego dla cen według statusu umeblowania
 boxplot(data_imputed$price ~ data_imputed$furnishingstatus)
@@ -536,6 +555,7 @@ plot1 <- ggplot(data_imputed, aes(x=bedrooms, price)) +
 plot1 + facet_wrap(~ bedrooms)
 
 ```
+
 ```{r}
 # Porównanie średniej, mediany i kwantyli dla cen
 
@@ -554,6 +574,7 @@ mean(data_imputed$price)
     quantile(data_imputed$price,probs=c(0,0.1,0.25,0.5,0.75,0.95,1),na.rm=TRUE)
     
 ```
+
 ```{r kable_report, echo=FALSE}
 #Tworzenie tabeli z wykresami dla różnych liczby pokoi
 data_imputed_list <- split(data_imputed$price, data_imputed$bedrooms)
@@ -568,6 +589,7 @@ inline_plot <- data.frame(rooms = c(1, 2, 3, 4, 5, 6), boxplot = "", histogram =
   column_spec(6, image = spec_plot(data_imputed_list, type = "p"))
 
 ```
+
 ```{r kable_report, echo=FALSE}
 # Tworzenie tabeli z wykresami według ogrzewania wody
 mieszkania_list <- split(data_imputed$price, data_imputed$hotwaterheating)
@@ -582,6 +604,7 @@ inline_plot <- data.frame(hotwaterheating = c(TRUE, FALSE), boxplot = "", histog
   column_spec(6, image = spec_plot(mieszkania_list, type = "p"))
 
 ```
+
 ```{r kable_report2, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 raport <-
   list("Cena" =
@@ -609,6 +632,7 @@ knitr::kable(tabela,
   col.names = c("Statystyka","1 pokój", "2 pokoje", "3 pokoje", "4 pokoje", "5 pokoi")) 
 
 ```
+
 ```{r}
 
 data_imputed %>%
@@ -628,13 +652,8 @@ data_imputed %>%
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2))
 ```
 
+Wizualizacja danych 1. Mapowanie danych (wykresy) Na przykładzie zależności między ceną (price) a powierzchnią (area).
 
-
-
-
-Wizualizacja danych
-1. Mapowanie danych (wykresy)
-Na przykładzie zależności między ceną (price) a powierzchnią (area).
 ```{r}
 # Wykres rozrzutu z ceną na osi Y i powierzchnią na osi X
 library(ggplot2)
@@ -647,15 +666,17 @@ ggplot(data_imputed, aes(x = area, y = price, color = prefarea)) +
        y = "Cena (PLN)") +
   theme_minimal()
 ```
-Wykres przedstawia zależność między ceną nieruchomości a ich powierzchnią, z uwzględnieniem podziału na preferowane obszary. Na osi pionowej znajduje się cena w PLN, a na osi poziomej powierzchnia w metrach kwadratowych. Wartości ceny wahają się od 2,500,000 PLN do 12,500,000 PLN, podczas gdy powierzchnia mieści się w zakresie od 0 do 16,000 m².
-Wykres wskazuje na ogólną tendencję wzrostu ceny wraz ze wzrostem powierzchni, co jest zgodne z oczekiwaniami.
-Punkty danych są podzielone na dwie kategorie: prefarea = TRUE i prefarea = FALSE. Można zauważyć, że nieruchomości zlokalizowane w preferowanych obszarach (prefarea = TRUE) mają tendencję do osiągania wyższych cen przy podobnej powierzchni w porównaniu do nieruchomości z obszarów niepreferowanych.
 
-Wnioski:
-Lokalizacja w preferowanym obszarze ma istotny wpływ na cenę nieruchomości, co sugeruje, że czynniki lokalizacyjne są kluczowe w wycenie nieruchomości.
+Wykres przedstawia zależność między ceną nieruchomości a ich powierzchnią, z uwzględnieniem podziału na preferowane obszary. Na osi pionowej znajduje się cena w PLN, a na osi poziomej powierzchnia w metrach kwadratowych. Wartości ceny wahają się od 2,500,000 PLN do 12,500,000 PLN, podczas gdy powierzchnia mieści się w zakresie od 0 do 16,000 m². Wykres wskazuje na ogólną tendencję wzrostu ceny wraz ze wzrostem powierzchni, co jest zgodne z oczekiwaniami. Punkty danych są podzielone na dwie kategorie: prefarea = TRUE i prefarea = FALSE. Można zauważyć, że nieruchomości zlokalizowane w preferowanych obszarach (prefarea = TRUE) mają tendencję do osiągania wyższych cen przy podobnej powierzchni w porównaniu do nieruchomości z obszarów niepreferowanych.
 
-2. Wizualizacja ilości
-a) Histogram rozkładu liczby sypialni (bedrooms).
+Wnioski: Lokalizacja w preferowanym obszarze ma istotny wpływ na cenę nieruchomości, co sugeruje, że czynniki lokalizacyjne są kluczowe w wycenie nieruchomości.
+
+2.  Wizualizacja ilości
+
+<!-- -->
+
+a)  Histogram rozkładu liczby sypialni (bedrooms).
+
 ```{r}
 # Histogram liczby sypialni
 ggplot(data_imputed, aes(x = bedrooms)) +
@@ -665,14 +686,13 @@ ggplot(data_imputed, aes(x = bedrooms)) +
        y = "Liczba nieruchomości") +
   theme_minimal()
 ```
-Wykres przedstawia rozkład liczby sypialni w analizowanych nieruchomościach. Na osi pionowej znajduje się liczba nieruchomości, a na osi poziomej liczba sypialni.
-Większość nieruchomości posiada od 2 do 4 sypialni, co wskazuje na dominację nieruchomości o średniej wielkości.
-Nieruchomości z 1 sypialnią lub więcej niż 4 sypialnie są znacznie mniej liczne.
 
-Wnioski:
-Rozkład ten sugeruje, że rynek nieruchomości jest zdominowany przez mieszkania i domy o średniej wielkości, co może odzwierciedlać preferencje nabywców.
+Wykres przedstawia rozkład liczby sypialni w analizowanych nieruchomościach. Na osi pionowej znajduje się liczba nieruchomości, a na osi poziomej liczba sypialni. Większość nieruchomości posiada od 2 do 4 sypialni, co wskazuje na dominację nieruchomości o średniej wielkości. Nieruchomości z 1 sypialnią lub więcej niż 4 sypialnie są znacznie mniej liczne.
 
-b) Liczba nieruchomości w zależności od dostępu do drogi głównej (mainroad):
+Wnioski: Rozkład ten sugeruje, że rynek nieruchomości jest zdominowany przez mieszkania i domy o średniej wielkości, co może odzwierciedlać preferencje nabywców.
+
+b)  Liczba nieruchomości w zależności od dostępu do drogi głównej (mainroad):
+
 ```{r}
 # Histogram liczby nieruchomości z dostępem do drogi głównej
 ggplot(data_imputed, aes(x = mainroad)) +
@@ -682,14 +702,13 @@ ggplot(data_imputed, aes(x = mainroad)) +
        y = "Liczba nieruchomości") +
   theme_minimal()
 ```
-Wykres przedstawia liczbę nieruchomości z dostępem do drogi głównej, podzielonych na kategorie TRUE (dostęp) i FALSE (brak dostępu).
-Większość nieruchomości posiada dostęp do drogi głównej, co może wpływać na ich atrakcyjność i cenę.
-Nieruchomości bez dostępu do drogi głównej stanowią mniejszość.
 
-Wnioski:
-Dostęp do drogi głównej jest istotnym czynnikiem wpływającym na wartość nieruchomości, co może być związane z wygodą dojazdu i ogólną dostępnością.
+Wykres przedstawia liczbę nieruchomości z dostępem do drogi głównej, podzielonych na kategorie TRUE (dostęp) i FALSE (brak dostępu). Większość nieruchomości posiada dostęp do drogi głównej, co może wpływać na ich atrakcyjność i cenę. Nieruchomości bez dostępu do drogi głównej stanowią mniejszość.
 
-c) Liczba nieruchomości z klimatyzacją (airconditioning):
+Wnioski: Dostęp do drogi głównej jest istotnym czynnikiem wpływającym na wartość nieruchomości, co może być związane z wygodą dojazdu i ogólną dostępnością.
+
+c)  Liczba nieruchomości z klimatyzacją (airconditioning):
+
 ```{r}
 # Histogram liczby nieruchomości z klimatyzacją
 ggplot(data_imputed, aes(x = airconditioning)) +
@@ -699,15 +718,17 @@ ggplot(data_imputed, aes(x = airconditioning)) +
        y = "Liczba nieruchomości") +
   theme_minimal()
 ```
-Wykres przedstawia liczbę nieruchomości wyposażonych w klimatyzację, podzielonych na kategorie TRUE (klimatyzacja) i FALSE (brak klimatyzacji).
-Większość nieruchomości nie posiada klimatyzacji, co może odzwierciedlać specyfikę lokalnego rynku nieruchomości.
-Nieruchomości z klimatyzacją stanowią mniejszość, co może wpływać na ich wyższą cenę.
 
-Wnioski:
-Klimatyzacja jest rzadkością w analizowanym zbiorze nieruchomości, co może sugerować, że jest to czynnik różnicujący i wpływający na wartość nieruchomości.
+Wykres przedstawia liczbę nieruchomości wyposażonych w klimatyzację, podzielonych na kategorie TRUE (klimatyzacja) i FALSE (brak klimatyzacji). Większość nieruchomości nie posiada klimatyzacji, co może odzwierciedlać specyfikę lokalnego rynku nieruchomości. Nieruchomości z klimatyzacją stanowią mniejszość, co może wpływać na ich wyższą cenę.
 
-3. Wizualizacja rozkładów
-a) Wykres rozkładu powierzchni (area) z podziałem na obecność klimatyzacji (airconditioning).
+Wnioski: Klimatyzacja jest rzadkością w analizowanym zbiorze nieruchomości, co może sugerować, że jest to czynnik różnicujący i wpływający na wartość nieruchomości.
+
+3.  Wizualizacja rozkładów
+
+<!-- -->
+
+a)  Wykres rozkładu powierzchni (area) z podziałem na obecność klimatyzacji (airconditioning).
+
 ```{r}
 # Wykres gęstości powierzchni z podziałem na klimatyzację
 ggplot(data_imputed, aes(x = area, fill = airconditioning)) +
@@ -719,14 +740,13 @@ ggplot(data_imputed, aes(x = area, fill = airconditioning)) +
        fill = "Klimatyzacja") +
   theme_minimal()
 ```
-Wykres przedstawia rozkład powierzchni nieruchomości w zależności od obecności klimatyzacji. Na osi pionowej znajduje się gęstość, a na osi poziomej powierzchnia w metrach kwadratowych.
-Nieruchomości z klimatyzacją mają tendencję do większej powierzchni w porównaniu do nieruchomości bez klimatyzacji.
-Rozkład powierzchni dla nieruchomości z klimatyzacją jest bardziej rozproszony, co może wskazywać na większą różnorodność w tej kategorii.
 
-Wnioski:
-Klimatyzacja jest częściej spotykana w większych nieruchomościach, co może sugerować, że jest to cecha charakterystyczna dla nieruchomości o wyższym standardzie.
+Wykres przedstawia rozkład powierzchni nieruchomości w zależności od obecności klimatyzacji. Na osi pionowej znajduje się gęstość, a na osi poziomej powierzchnia w metrach kwadratowych. Nieruchomości z klimatyzacją mają tendencję do większej powierzchni w porównaniu do nieruchomości bez klimatyzacji. Rozkład powierzchni dla nieruchomości z klimatyzacją jest bardziej rozproszony, co może wskazywać na większą różnorodność w tej kategorii.
 
-b) Rozkład cen (price) z podziałem na status umeblowania (furnishingstatus):
+Wnioski: Klimatyzacja jest częściej spotykana w większych nieruchomościach, co może sugerować, że jest to cecha charakterystyczna dla nieruchomości o wyższym standardzie.
+
+b)  Rozkład cen (price) z podziałem na status umeblowania (furnishingstatus):
+
 ```{r}
 # Rozkład cen z podziałem na umeblowanie
 ggplot(data_imputed, aes(x = price, fill = furnishingstatus)) +
@@ -738,14 +758,13 @@ ggplot(data_imputed, aes(x = price, fill = furnishingstatus)) +
        fill = "Status umeblowania") +
   theme_minimal()
 ```
-Wykres przedstawia rozkład cen nieruchomości w zależności od ich statusu umeblowania. Na osi pionowej znajduje się gęstość, a na osi poziomej cena w PLN. Status umeblowania jest podzielony na trzy kategorie: furnished (umeblowane), semi-furnished (częściowo umeblowane) i unfurnished (nieumeblowane).
-Nieruchomości umeblowane (furnished) mają tendencję do osiągania wyższych cen w porównaniu do nieruchomości częściowo umeblowanych (semi-furnished) i nieumeblowanych (unfurnished).
-Rozkład cen dla nieruchomości nieumeblowanych jest bardziej skoncentrowany w niższych przedziałach cenowych.
 
-Wnioski:
-Status umeblowania ma istotny wpływ na cenę nieruchomości, co sugeruje, że nabywcy są skłonni płacić więcej za nieruchomości gotowe do zamieszkania.
+Wykres przedstawia rozkład cen nieruchomości w zależności od ich statusu umeblowania. Na osi pionowej znajduje się gęstość, a na osi poziomej cena w PLN. Status umeblowania jest podzielony na trzy kategorie: furnished (umeblowane), semi-furnished (częściowo umeblowane) i unfurnished (nieumeblowane). Nieruchomości umeblowane (furnished) mają tendencję do osiągania wyższych cen w porównaniu do nieruchomości częściowo umeblowanych (semi-furnished) i nieumeblowanych (unfurnished). Rozkład cen dla nieruchomości nieumeblowanych jest bardziej skoncentrowany w niższych przedziałach cenowych.
 
-c) Rozkład liczby parkingów (parking):
+Wnioski: Status umeblowania ma istotny wpływ na cenę nieruchomości, co sugeruje, że nabywcy są skłonni płacić więcej za nieruchomości gotowe do zamieszkania.
+
+c)  Rozkład liczby parkingów (parking):
+
 ```{r}
 # Rozkład liczby parkingów
 ggplot(data_imputed, aes(x = parking)) +
@@ -755,15 +774,17 @@ ggplot(data_imputed, aes(x = parking)) +
        y = "Liczba nieruchomości") +
   theme_minimal()
 ```
-Wykres przedstawia rozkład liczby parkingów dostępnych w analizowanych nieruchomościach. Na osi poziomej znajduje się liczba parkingów, a na osi pionowej liczba nieruchomości.
-Większość nieruchomości posiada 1 lub 2 miejsca parkingowe, co wskazuje na standardową dostępność parkingów.
-Nieruchomości z 3 miejscami parkingowymi są rzadkością.
 
-Wnioski:
-Liczba miejsc parkingowych jest istotnym czynnikiem wpływającym na atrakcyjność nieruchomości, szczególnie w obszarach o ograniczonej dostępności parkingów.
+Wykres przedstawia rozkład liczby parkingów dostępnych w analizowanych nieruchomościach. Na osi poziomej znajduje się liczba parkingów, a na osi pionowej liczba nieruchomości. Większość nieruchomości posiada 1 lub 2 miejsca parkingowe, co wskazuje na standardową dostępność parkingów. Nieruchomości z 3 miejscami parkingowymi są rzadkością.
 
-4. Wizualizacja proporcji
-a) Wykres kołowy dla statusu umeblowania (furnishingstatus).
+Wnioski: Liczba miejsc parkingowych jest istotnym czynnikiem wpływającym na atrakcyjność nieruchomości, szczególnie w obszarach o ograniczonej dostępności parkingów.
+
+4.  Wizualizacja proporcji
+
+<!-- -->
+
+a)  Wykres kołowy dla statusu umeblowania (furnishingstatus).
+
 ```{r}
 # Proporcje statusu umeblowania
 library(dplyr)
@@ -778,14 +799,13 @@ data_imputed %>%
        fill = "Status umeblowania") +
   theme_void()
 ```
-Wykres przedstawia proporcje nieruchomości według statusu umeblowania: furnished, semi-furnished i unfurnished.
-Największy odsetek nieruchomości to te nieumeblowane (unfurnished), co może odzwierciedlać preferencje nabywców do personalizacji przestrzeni.
-Nieruchomości umeblowane (furnished) stanowią mniejszość, ale są bardziej pożądane ze względu na wyższą cenę.
 
-Wnioski:
-Rynek nieruchomości jest zdominowany przez nieruchomości nieumeblowane, co może wpływać na strategie marketingowe i wycenę nieruchomości.
+Wykres przedstawia proporcje nieruchomości według statusu umeblowania: furnished, semi-furnished i unfurnished. Największy odsetek nieruchomości to te nieumeblowane (unfurnished), co może odzwierciedlać preferencje nabywców do personalizacji przestrzeni. Nieruchomości umeblowane (furnished) stanowią mniejszość, ale są bardziej pożądane ze względu na wyższą cenę.
 
-b) Proporcje dostępu do piwnicy (basement):
+Wnioski: Rynek nieruchomości jest zdominowany przez nieruchomości nieumeblowane, co może wpływać na strategie marketingowe i wycenę nieruchomości.
+
+b)  Proporcje dostępu do piwnicy (basement):
+
 ```{r}
 data_imputed %>%
   count(basement) %>%
@@ -797,14 +817,13 @@ data_imputed %>%
        fill = "Piwnica") +
   theme_void()
 ```
-Wykres przedstawia proporcje nieruchomości z piwnicą (TRUE) i bez piwnicy (FALSE).
-Większość nieruchomości posiada piwnicę, co może zwiększać ich funkcjonalność i atrakcyjność.
-Nieruchomości bez piwnicy stanowią mniejszość.
 
-Wnioski:
-Obecność piwnicy jest istotnym czynnikiem wpływającym na wartość nieruchomości, szczególnie w kontekście dodatkowej przestrzeni magazynowej.
+Wykres przedstawia proporcje nieruchomości z piwnicą (TRUE) i bez piwnicy (FALSE). Większość nieruchomości posiada piwnicę, co może zwiększać ich funkcjonalność i atrakcyjność. Nieruchomości bez piwnicy stanowią mniejszość.
 
-c) Proporcja nieruchomości z ogrzewaniem wody (hotwaterheating):
+Wnioski: Obecność piwnicy jest istotnym czynnikiem wpływającym na wartość nieruchomości, szczególnie w kontekście dodatkowej przestrzeni magazynowej.
+
+c)  Proporcja nieruchomości z ogrzewaniem wody (hotwaterheating):
+
 ```{r}
 # Wykres proporcji ogrzewania wody
 data_imputed %>%
@@ -817,12 +836,10 @@ data_imputed %>%
        fill = "Ogrzewanie wody") +
   theme_void()
 ```
-Wykres przedstawia proporcje nieruchomości z ogrzewaniem wody (TRUE) i bez ogrzewania wody (FALSE).
-Większość nieruchomości jest wyposażona w system ogrzewania wody, co jest standardem w nowoczesnych nieruchomościach.
-Nieruchomości bez ogrzewania wody stanowią mniejszość.
 
-Wnioski:
-Ogrzewanie wody jest powszechnym i oczekiwanym udogodnieniem, które wpływa na komfort użytkowania nieruchomości.
+Wykres przedstawia proporcje nieruchomości z ogrzewaniem wody (TRUE) i bez ogrzewania wody (FALSE). Większość nieruchomości jest wyposażona w system ogrzewania wody, co jest standardem w nowoczesnych nieruchomościach. Nieruchomości bez ogrzewania wody stanowią mniejszość.
+
+Wnioski: Ogrzewanie wody jest powszechnym i oczekiwanym udogodnieniem, które wpływa na komfort użytkowania nieruchomości.
 
 ### Podsumowanie analizy wizualizacji danych
 
@@ -836,23 +853,20 @@ Funkcjonalność nieruchomości, w tym obecność piwnicy, wpływa na ich prakty
 
 Podsumowując, analiza wizualizacji danych pozwala na zidentyfikowanie kluczowych czynników kształtujących rynek nieruchomości. Wnioski te mogą stanowić cenne źródło informacji dla inwestorów, deweloperów oraz nabywców, umożliwiając bardziej świadome podejmowanie decyzji inwestycyjnych i rynkowych.
 
-## Wnioskowanie statystyczne 
+## Wnioskowanie statystyczne
 
 ```{r}
 summary(data[, sapply(df, is.numeric)]) 
 ```
 
+# Opis statystyczny zmiennych numerycznych
 
-# Opis statystyczny zmiennych numerycznych 
-
-# Analiza różnic między grupami (price vs furnishingstatus) 
+# Analiza różnic między grupami (price vs furnishingstatus)
 
 Analiza zależności między zmiennymi (price vs area)
 
-# Macierz korelacji dla zmiennych numerycznych 
+# Macierz korelacji dla zmiennych numerycznych
 
 # Wizualizacja proporcji zmiennej kategorycznej (furnishingstatus)
 
-## Podsumowanie wnioskowania statystycznego 
-
-
+## Podsumowanie wnioskowania statystycznego
