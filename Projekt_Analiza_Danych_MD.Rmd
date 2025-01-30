@@ -443,8 +443,6 @@ View(klasy)
 
 #Analizujemy rozkład cen mieszkań za pomocą histogramu oraz funkcji gęstości. Po usunięciu wartości brakujących (NA), sprawdzamy zakres cenowy, który wskazuje na minimalną i maksymalną wartość ceny mieszkań w zbiorze danych.
 
-
-
 ```{r}
 
 data_imputed$price <- as.numeric(data_imputed$price)
@@ -462,6 +460,7 @@ print(breaks)
 hist(filtered_prices, prob = TRUE, breaks = breaks, main = "Price", sub = "in PLN")
 lines(density(filtered_prices), col = 2)
 ```
+
 #Histogram przedstawia liczbę mieszkań w różnych przedziałach cenowych, a dodatkowa linia gęstości (density()) pomaga zidentyfikować kształt rozkładu danych.
 
 #Na załączonym wykresie widzimy, że rozkład cen mieszkań jest prawostronnie skośny, co oznacza, że większość ofert dotyczy tańszych mieszkań, natomiast ceny luksusowych nieruchomości są bardziej rozproszone i występują rzadziej.
@@ -487,6 +486,8 @@ jenks.tests(tab1)
 ###Dodatkowo, wartość Goodness of Fit = 0,978 sugeruje, że klasyfikacja danych według wybranej metody pozwala na bardzo dobre odwzorowanie rzeczywistego rozkładu cen. Oznacza to, że analizowane przedziały cenowe są sensowne i dobrze opisują strukturę rynku mieszkań.
 ```
 
+#Analizujemy skumulowany rozkład cen mieszkań, wykorzystując dystrybuantę empiryczną (ECDF).
+
 ```{r}
 tab1<-classIntervals(data_imputed$price,n=10,style="fixed",fixedBreaks=seq(1750000,12250000,by=1000000))
 pcol= c('darkblue', 'blue', 'lightblue', 'palegreen', 'lightpink', 'brown3', 'red', 'yellow', 'brown', 'black')
@@ -495,8 +496,17 @@ plot(tab1,pal=pcol,ylab='Cumulative %')
 
 ```
 
+#Wykres ten przedstawia, jaka część obserwacji znajduje się poniżej określonych wartości cenowych, co pozwala na ocenę struktury rynku nieruchomości.
+
+#Krzywa dystrybuanty pokazuje, że większość mieszkań znajduje się w niższych przedziałach cenowych – około 80% nieruchomości kosztuje mniej niż 8 milionów złotych, a tylko niewielki odsetek przekracza 10 milionów złotych.
+
+#Dodatkowo, na wykresie zastosowano kolorowe segmenty, które odpowiadają poszczególnym przedziałom cenowym, co ułatwia interpretację skumulowanego rozkładu. Można zauważyć, że największy wzrost wartości skumulowanej następuje w zakresie 3-6 milionów złotych, co potwierdza wcześniejsze analizy dotyczące dominujących przedziałów cenowych.
+
+#Wnioski te wskazują, że rynek mieszkań w analizowanym zbiorze jest skoncentrowany wokół średnich cen, a ekskluzywne nieruchomości stanowią mniejszość ofert.
+
 ```{r histogram, echo=FALSE}
 # Zastosowanie reguły Freedman/Diaconis do tworzenia histogramu
+# Analizujemy wpływ wyposażenia mieszkań na ich ceny, wykorzystując histogram oraz krzywe gęstości dla różnych kategorii umeblowania.
 
 hist(data_imputed$price, breaks="FD", col="green", probability = TRUE,
      main="Ceny mieszkań")
@@ -508,10 +518,25 @@ legend("topright", legend=c("furnished", "semi-furnished", "unfurnished"),
 
 ```
 
+#Histogram przedstawia rozkład cen wszystkich mieszkań, z dominującą liczbą ofert w przedziale 3-6 milionów złotych. Warto zauważyć, że rozkład jest prawostronnie skośny – wyższe ceny występują rzadziej, co jest zgodne z wcześniejszymi analizami rynku.
+
+#Dodatkowo, na wykresie umieszczono trzy krzywe gęstości dla mieszkań: #Furnished (umeblowane, czerwona linia) – Rozkład tych mieszkań jest bardziej równomierny, a ceny obejmują szeroki zakres. \#*Semi-furnished (częściowo umeblowane, zielona linia) – W tej kategorii zauważamy największe skupienie ofert w okolicach 4-5 mln zł. \#*Unfurnished (nieumeblowane, niebieska linia) – Te mieszkania wydają się mieć niższe ceny, a ich rozkład jest skoncentrowany w niższych przedziałach cenowych.
+
+#Wyniki sugerują, że umeblowane mieszkania mogą osiągać wyższe ceny, natomiast brak umeblowania często wiąże się z niższymi kosztami zakupu. To potwierdza tezę, że stan wykończenia nieruchomości ma istotny wpływ na ich wartość rynkową.
+
 ```{r boxplot, echo=FALSE}
 # Tworzenie wykresu pudełkowego dla cen według statusu umeblowania
+# Wykres pudełkowy przedstawia rozkład cen mieszkań w zależności od ich statusu umeblowania. Pozwala to na porównanie mediany, zakresu międzykwartylowego oraz wartości odstających w każdej z trzech kategorii - furnished, semi-furnished i unfurnished.
 boxplot(data_imputed$price ~ data_imputed$furnishingstatus)
 ```
+
+# Furnished (umeblowane) – Mediana cen mieszkań umeblowanych jest najwyższa spośród analizowanych kategorii. Rozkład jest stosunkowo szeroki, co oznacza, że ceny tych mieszkań mogą się znacząco różnić. Występuje także kilka wartości odstających w wyższych przedziałach cenowych.
+
+# Semi-furnished (częściowo umeblowane) – Ta kategoria charakteryzuje się podobną medianą do mieszkań umeblowanych, ale posiada większą liczbę wartości odstających. Wskazuje to na dużą zmienność cen w tej grupie, co może być związane z różnym standardem wykończenia.
+
+# Unfurnished (nieumeblowane) – Mediana cen jest najniższa spośród wszystkich kategorii, a rozstęp międzykwartylowy jest podobny do kategorii semi-furnished. Wartości odstające sugerują, że niektóre nieumeblowane mieszkania mogą osiągać ceny porównywalne do droższych ofert umeblowanych.
+
+#Ogólnie, analiza wykazuje, że umeblowane mieszkania mają tendencję do osiągania wyższych cen, co może wynikać z większego zainteresowania kupujących w pełni wyposażonymi nieruchomościami. Warto również zwrócić uwagę na liczne wartości odstające, co wskazuje na istnienie mieszkań w bardzo wysokich przedziałach cenowych w każdej z kategorii.
 
 ```{r histogram2, echo=FALSE}
 #Tworzenie wykresu gęstości dla cen z uwzględnieniem statusu umeblowania
@@ -536,7 +561,22 @@ ggarrange(density.p, stable.p, text.p,
           ncol = 1, nrow = 3,
           heights = c(1, 0.5, 0.3))
 ```
+#Wykres przedstawia estymację gęstości cen mieszkań w zależności od ich statusu umeblowania. Analiza obejmuje trzy kategorie: furnished (umeblowane), semi-furnished (częściowo umeblowane) oraz unfurnished (nieumeblowane).
 
+### Kształt rozkładów
+
+#Mieszkania częściowo umeblowane (żółty) dominują w zakresie ok. 4–6 mln PLN i wykazują najwyższą gęstość w tym przedziale cenowym.
+#Umeblowane mieszkania (niebieski) mają szerszy rozkład i większą wariancję, co oznacza większe zróżnicowanie cenowe.
+#Nieumeblowane mieszkania (szary) skupiają się wokół niższych wartości, co sugeruje, że w tej kategorii znajdują się najtańsze oferty.
+#Czerwona linia przerywana przedstawia nałożoną krzywą normalną, co pozwala porównać empiryczny rozkład z teoretycznym.
+### Statystyki opisowe
+
+#Średnia cena mieszkań umeblowanych wynosi 5 342 367 PLN, co jest najwyższą wartością spośród wszystkich kategorii.
+#Częściowo umeblowane mieszkania mają średnią 4 864 801 PLN, co sugeruje, że oferują pewien kompromis między ceną a standardem wyposażenia.
+#Nieumeblowane mieszkania mają najniższą średnią cenę (4 265 242 PLN), co potwierdza wcześniejsze obserwacje na wykresie.
+#Odchylenie standardowe (SD) wskazuje na większe zróżnicowanie cen wśród mieszkań umeblowanych, podczas gdy ceny mieszkań częściowo umeblowanych są bardziej skumulowane wokół średniej.
+### Wnioski
+#Mieszkania umeblowane są przeciętnie droższe, ale ich ceny są bardziej zróżnicowane. Z kolei nieumeblowane lokale charakteryzują się niższymi cenami, co może wynikać z niższej atrakcyjności dla kupujących.
 ```{r boxplot2, echo=FALSE}
 # Tworzenie wykresu pudełkowego z oznaczeniem średnich wartości
 ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
