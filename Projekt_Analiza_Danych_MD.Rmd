@@ -42,6 +42,7 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 
 ```{r}
+install.packages("gtsummary")
 install.packages("qwraps2")
 install.packages("psych")
 install.packages("kableExtra")
@@ -60,6 +61,7 @@ library(ggpubr)
 library(ggstatsplot) 
 library(psych)
 library(qwraps2)
+library(gtsummary)
 ```
 
 ```{r}
@@ -408,7 +410,7 @@ minmax <- function(data, columns_to_normalize) {
 
 ```{r table, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 #Tworzenie tabeli częstości dla cen
-tabela1<-freq(limits,type="html")
+tabela1<-table(limits)
 
 ```
 
@@ -608,10 +610,9 @@ knitr::kable(tabela,
 
 ```
 ```{r}
-install.packages(gtsummary)
-library(gtsummary)
+
 data_imputed %>%
-  select(data_imputed$price,data_imputed$bedrooms) %>%
+  select(price, bedrooms) %>%
   tbl_summary(
     by=bedrooms,
     type = all_continuous() ~ "continuous2",
@@ -620,12 +621,11 @@ data_imputed %>%
       "{median} ({p25}, {p75})",
       "{min}, {max}"),
     missing = "no",
-    label = data_imputed$price ~ "Cena") %>%
+    label = price ~ "Cena") %>%
   modify_header(label ~ "**Zmienna**") %>%
   modify_caption("**Tabela 1. Rozkład cen wg liczby pokoi**") %>%
   bold_labels() %>% 
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2))
-
 ```
 
 
