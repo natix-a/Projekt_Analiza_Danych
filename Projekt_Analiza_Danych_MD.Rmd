@@ -14,7 +14,7 @@ output:
     downcute_theme: "default"
 ---
 
-\# Projekt_Analiza_Danych
+#Projekt_Analiza_Danych
 
 GitGirls
 
@@ -24,9 +24,7 @@ Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, do
 
 Plik: agencja_nieruchomosci
 
-Wstęp
-
-### Wstęp do projektu
+## Wstęp do projektu
 
 W ramach niniejszego projektu przeprowadzono kompleksową analizę danych dotyczących rynku nieruchomości, wykorzystując zaawansowane techniki **Data Wranglingu**, **wizualizacji danych** oraz **analizy opisowej**. Celem projektu było zrozumienie kluczowych czynników wpływających na wartość i atrakcyjność nieruchomości, a także identyfikacja trendów i zależności występujących w analizowanym zbiorze danych.
 
@@ -82,9 +80,9 @@ Struktura danych
 str(data)
 ```
 
-# Data Wrangling
+## Data Wrangling
 
-## Eksploracja braków danych
+### Eksploracja braków danych
 
 Całkowita liczbę NA dla całej ramki danych lub dla określonej zmiennej (kolumny)
 
@@ -402,20 +400,15 @@ minmax <- function(data, columns_to_normalize) {
 
 ```
 
-# Analiza opisowa
+## Analiza opisowa
 
 ```{r table, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-#Tworzenie tabeli częstości dla cen
 
 ### Tabele liczności oraz TAI
 
 #Analizujemy zmienność cen mieszkań w zbiorze danych. Po przekształceniu zmiennej price na typ numeryczny obliczamy jej zakres oraz rozstęp. Pozwala to określić przedział, w którym mieszczą się ceny nieruchomości oraz ich maksymalne i minimalne wartości.
 
-#Następnie grupujemy ceny mieszkań w przedziały co 1 milion złotych, co umożliwia identyfikację dominujących kategorii cenowych. Najwięcej mieszkań znajduje się w przedziale 2.750.000-3.750.000 zł oraz 3.750.000-4.750.000 zł, co sugeruje, że większość ofert dotyczy mieszkań o średnim poziomie cenowym w badanym zbiorze.
-
-#Obserwujemy również, że liczba mieszkań maleje wraz ze wzrostem ceny – nieruchomości powyżej 10 milionów złotych stanowią niewielką część rynku. Jest to zgodne z intuicją, ponieważ luksusowe apartamenty są mniej liczne niż standardowe mieszkania.
-
-#Obliczenie częstości względnych i skumulowanych pozwala lepiej zrozumieć strukturę cen. Możemy określić, jaki procent mieszkań mieści się w określonych przedziałach, co ułatwia interpretację dostępności mieszkań w różnych segmentach cenowych.
+#Następnie grupujemy ceny mieszkań w przedziały co 1 milion złotych, co umożliwia identyfikację dominujących kategorii cenowych. 
 
 str(data_imputed$price)
 colnames(data_imputed)
@@ -435,6 +428,11 @@ klasy$cum_freq <- cumsum(klasy$Freq)
 names(klasy) <- c("limits", "freq", "rel_freq", "cum_freq")
 View(klasy)
 
+#Najwięcej mieszkań znajduje się w przedziale 2.750.000-3.750.000 zł oraz 3.750.000-4.750.000 zł, co sugeruje, że większość ofert dotyczy mieszkań o średnim poziomie cenowym w badanym zbiorze.
+
+#Obserwujemy również, że liczba mieszkań maleje wraz ze wzrostem ceny – nieruchomości powyżej 10 milionów złotych stanowią niewielką część rynku. Jest to zgodne z intuicją, ponieważ luksusowe apartamenty są mniej liczne niż standardowe mieszkania.
+
+#Obliczenie częstości względnych i skumulowanych pozwala lepiej zrozumieć strukturę cen. Możemy określić, jaki procent mieszkań mieści się w określonych przedziałach, co ułatwia interpretację dostępności mieszkań w różnych segmentach cenowych.
 ```
 
 ## Podstawowe wykresy
@@ -454,8 +452,10 @@ price_range <- range(filtered_prices, na.rm = TRUE)
 print(price_range)
 
 # Definiowanie przerw dla histogramu
+
 breaks <- seq(floor(price_range[1] / 1000000) * 1000000, ceiling(price_range[2] / 1000000) * 1000000, by = 1000000)
 print(breaks)
+
 # Rysowanie histogramu i gęstości
 hist(filtered_prices, prob = TRUE, breaks = breaks, main = "Price", sub = "in PLN")
 lines(density(filtered_prices), col = 2)
@@ -467,18 +467,14 @@ lines(density(filtered_prices), col = 2)
 
 #Najwięcej mieszkań znajduje się w przedziale około 3-5 mln zł, co jest zgodne z wcześniejszymi wynikami analizy tabeli częstości. Zauważamy również długi ogon rozkładu, wskazujący na obecność drogich nieruchomości, których ceny przekraczają 10 milionów złotych.
 
-#Tego rodzaju rozkład jest typowy dla rynku nieruchomości, gdzie większość ofert dotyczy mieszkań w standardowych przedziałach cenowych, a ceny ekskluzywnych nieruchomości są znacznie wyższe.
-
 ```{r}
-# Tworzenie tabeli
-### Analizujemy podział cen mieszkań na klasy, aby lepiej zrozumieć strukturę cenową na rynku. Tworzymy tabelę przedziałów cenowych z użyciem metody podziału na stałe klasy cenowe, co pozwala na czytelne przedstawienie częstości występowania mieszkań w określonych przedziałach.
+### Tworzymy tabelę przedziałów cenowych z użyciem metody podziału na stałe klasy cenowe, co pozwala na czytelne przedstawienie częstości występowania mieszkań w określonych przedziałach.
 kbl(table1, caption = "Ceny mieszkań") %>%
   kable_material(c("striped", "hover"))
 tab1<-classIntervals(data_imputed$price,n=10,style="fixed",fixedBreaks=seq(1750000,12250000,by=1000000))
 price_range <- range(data_imputed$price, na.rm=TRUE)
 print(price_range)
-# Obliczenie wskaźnika dokładności tabeli (TAI)
-### Obliczamy również wskaźnik dokładności tabeli (Tabular Accuracy Index – TAI), który informuje nas, jak dobrze wybrane przedziały odzwierciedlają rzeczywisty rozkład danych. 
+# Obliczamy wskaźnik dokładności tabeli (TAI), który informuje nas, jak dobrze wybrane przedziały odzwierciedlają rzeczywisty rozkład danych. 
 jenks.tests(tab1)
 
 #Wskaźnik TAI jest dość wysoki. 0,84 oznacza, że możemy zaakceptować zaproponowaną konstrukcję tablicy częstości, czyli możemy uznać ten podział za reprezentatywny dla zbioru danych.
@@ -486,7 +482,7 @@ jenks.tests(tab1)
 ###Dodatkowo, wartość Goodness of Fit = 0,978 sugeruje, że klasyfikacja danych według wybranej metody pozwala na bardzo dobre odwzorowanie rzeczywistego rozkładu cen. Oznacza to, że analizowane przedziały cenowe są sensowne i dobrze opisują strukturę rynku mieszkań.
 ```
 
-#Analizujemy skumulowany rozkład cen mieszkań, wykorzystując dystrybuantę empiryczną (ECDF).
+#Analizujemy skumulowany rozkład cen mieszkań, wykorzystując ECDF.
 
 ```{r}
 tab1<-classIntervals(data_imputed$price,n=10,style="fixed",fixedBreaks=seq(1750000,12250000,by=1000000))
@@ -500,7 +496,7 @@ plot(tab1,pal=pcol,ylab='Cumulative %')
 
 #Krzywa dystrybuanty pokazuje, że większość mieszkań znajduje się w niższych przedziałach cenowych – około 80% nieruchomości kosztuje mniej niż 8 milionów złotych, a tylko niewielki odsetek przekracza 10 milionów złotych.
 
-#Dodatkowo, na wykresie zastosowano kolorowe segmenty, które odpowiadają poszczególnym przedziałom cenowym, co ułatwia interpretację skumulowanego rozkładu. Można zauważyć, że największy wzrost wartości skumulowanej następuje w zakresie 3-6 milionów złotych, co potwierdza wcześniejsze analizy dotyczące dominujących przedziałów cenowych.
+#Dodatkowo, na wykresie zastosowane zostały kolorowe segmenty, które odpowiadają poszczególnym przedziałom cenowym, co ułatwia interpretację skumulowanego rozkładu. Można zauważyć, że największy wzrost wartości skumulowanej następuje w zakresie 3-6 milionów złotych, co potwierdza wcześniejsze analizy dotyczące dominujących przedziałów cenowych.
 
 #Wnioski te wskazują, że rynek mieszkań w analizowanym zbiorze jest skoncentrowany wokół średnich cen, a ekskluzywne nieruchomości stanowią mniejszość ofert.
 
@@ -561,22 +557,15 @@ ggarrange(density.p, stable.p, text.p,
           ncol = 1, nrow = 3,
           heights = c(1, 0.5, 0.3))
 ```
+
 #Wykres przedstawia estymację gęstości cen mieszkań w zależności od ich statusu umeblowania. Analiza obejmuje trzy kategorie: furnished (umeblowane), semi-furnished (częściowo umeblowane) oraz unfurnished (nieumeblowane).
 
 ### Kształt rozkładów
 
-#Mieszkania częściowo umeblowane (żółty) dominują w zakresie ok. 4–6 mln PLN i wykazują najwyższą gęstość w tym przedziale cenowym.
-#Umeblowane mieszkania (niebieski) mają szerszy rozkład i większą wariancję, co oznacza większe zróżnicowanie cenowe.
-#Nieumeblowane mieszkania (szary) skupiają się wokół niższych wartości, co sugeruje, że w tej kategorii znajdują się najtańsze oferty.
-#Czerwona linia przerywana przedstawia nałożoną krzywą normalną, co pozwala porównać empiryczny rozkład z teoretycznym.
-### Statystyki opisowe
+#Mieszkania częściowo umeblowane (żółty) dominują w zakresie ok. 4–6 mln PLN i wykazują najwyższą gęstość w tym przedziale cenowym. #Umeblowane mieszkania (niebieski) mają szerszy rozkład i większą wariancję, co oznacza większe zróżnicowanie cenowe. #Nieumeblowane mieszkania (szary) skupiają się wokół niższych wartości, co sugeruje, że w tej kategorii znajdują się najtańsze oferty. #Czerwona linia przerywana przedstawia nałożoną krzywą normalną, co pozwala porównać empiryczny rozkład z teoretycznym. \### Statystyki opisowe
 
-#Średnia cena mieszkań umeblowanych wynosi 5 342 367 PLN, co jest najwyższą wartością spośród wszystkich kategorii.
-#Częściowo umeblowane mieszkania mają średnią 4 864 801 PLN, co sugeruje, że oferują pewien kompromis między ceną a standardem wyposażenia.
-#Nieumeblowane mieszkania mają najniższą średnią cenę (4 265 242 PLN), co potwierdza wcześniejsze obserwacje na wykresie.
-#Odchylenie standardowe (SD) wskazuje na większe zróżnicowanie cen wśród mieszkań umeblowanych, podczas gdy ceny mieszkań częściowo umeblowanych są bardziej skumulowane wokół średniej.
-### Wnioski
-#Mieszkania umeblowane są przeciętnie droższe, ale ich ceny są bardziej zróżnicowane. Z kolei nieumeblowane lokale charakteryzują się niższymi cenami, co może wynikać z niższej atrakcyjności dla kupujących.
+#Średnia cena mieszkań umeblowanych wynosi 5 342 367 PLN, co jest najwyższą wartością spośród wszystkich kategorii. #Częściowo umeblowane mieszkania mają średnią 4 864 801 PLN, co sugeruje, że oferują pewien kompromis między ceną a standardem wyposażenia. #Nieumeblowane mieszkania mają najniższą średnią cenę (4 265 242 PLN), co potwierdza wcześniejsze obserwacje na wykresie. #Odchylenie standardowe (SD) wskazuje na większe zróżnicowanie cen wśród mieszkań umeblowanych, podczas gdy ceny mieszkań częściowo umeblowanych są bardziej skumulowane wokół średniej. \### Wnioski #Mieszkania umeblowane są przeciętnie droższe, ale ich ceny są bardziej zróżnicowane. Z kolei nieumeblowane lokale charakteryzują się niższymi cenami, co może wynikać z niższej atrakcyjności dla kupujących.
+
 ```{r boxplot2, echo=FALSE}
 # Tworzenie wykresu pudełkowego z oznaczeniem średnich wartości
 ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
@@ -586,27 +575,17 @@ ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
     facet_grid(~furnishingstatus) +
     scale_fill_brewer(palette="Set1")
 ```
-#Wykres pudełkowy cen mieszkań według statusu umeblowania
-#Wykres przedstawia rozkład cen mieszkań dla trzech kategorii umeblowania: umeblowane (furnished), częściowo umeblowane (semi-furnished) i nieumeblowane (unfurnished).
+
+#Wykres pudełkowy cen mieszkań według statusu umeblowania #Wykres przedstawia rozkład cen mieszkań dla trzech kategorii umeblowania: umeblowane (furnished), częściowo umeblowane (semi-furnished) i nieumeblowane (unfurnished).
 
 #Elementy wykresu
 
-#Pudełka pokazują rozstęp międzykwartylowy (IQR) – czyli obszar między 25. a 75. percentylem cen mieszkań.
-#Wąsy wskazują rozpiętość cen bez wartości odstających.
-#Czarne kropki reprezentują indywidualne obserwacje (każde mieszkanie jako punkt).
-#Czerwone punkty oznaczają średnie wartości cen dla każdej kategorii umeblowania.
-#Funkcja jitter rozrzuca kropki poziomo, aby uniknąć ich nakładania.
-#Interpretacja wyników
+#Pudełka pokazują rozstęp międzykwartylowy (IQR) – czyli obszar między 25. a 75. percentylem cen mieszkań. #Wąsy wskazują rozpiętość cen bez wartości odstających. #Czarne kropki reprezentują indywidualne obserwacje (każde mieszkanie jako punkt). #Czerwone punkty oznaczają średnie wartości cen dla każdej kategorii umeblowania. #Funkcja jitter rozrzuca kropki poziomo, aby uniknąć ich nakładania. #Interpretacja wyników
 
-#Mediany cen (środkowe linie pudełek) sugerują, że umeblowane mieszkania są najdroższe, a nieumeblowane mają najniższą medianę ceny.
-#Rozkład cen jest zróżnicowany, zwłaszcza dla mieszkań umeblowanych, które mają szerszy przedział cenowy.
-#Wartości odstające (punkty powyżej górnych wąsów) wskazują na istnienie luksusowych, bardzo drogich mieszkań we wszystkich trzech kategoriach.
-#Średnia cena (czerwony punkt) dla mieszkań umeblowanych jest wyraźnie wyższa niż dla pozostałych kategorii.
-#Wnioski
+#Mediany cen (środkowe linie pudełek) sugerują, że umeblowane mieszkania są najdroższe, a nieumeblowane mają najniższą medianę ceny. #Rozkład cen jest zróżnicowany, zwłaszcza dla mieszkań umeblowanych, które mają szerszy przedział cenowy. #Wartości odstające (punkty powyżej górnych wąsów) wskazują na istnienie luksusowych, bardzo drogich mieszkań we wszystkich trzech kategoriach. #Średnia cena (czerwony punkt) dla mieszkań umeblowanych jest wyraźnie wyższa niż dla pozostałych kategorii. #Wnioski
 
-#Mieszkania umeblowane są droższe, ale ich ceny są bardziej zróżnicowane.
-#Ceny mieszkań częściowo umeblowanych i nieumeblowanych są bardziej skupione wokół mediany, co sugeruje mniejsze różnice między najtańszymi i najdroższymi ofertami.
-#Istnieją mieszkania o ekstremalnie wysokich cenach, które mogą wpływać na średnią wartość w każdej kategorii.
+#Mieszkania umeblowane są droższe, ale ich ceny są bardziej zróżnicowane. #Ceny mieszkań częściowo umeblowanych i nieumeblowanych są bardziej skupione wokół mediany, co sugeruje mniejsze różnice między najtańszymi i najdroższymi ofertami. #Istnieją mieszkania o ekstremalnie wysokich cenach, które mogą wpływać na średnią wartość w każdej kategorii.
+
 ```{r facet1, echo=FALSE}
 ## Grupowanie wykresów według liczby pokoi
 plot1 <- ggplot(data_imputed, aes(x=bedrooms, price)) + 
@@ -615,11 +594,13 @@ plot1 <- ggplot(data_imputed, aes(x=bedrooms, price)) +
 plot1 + facet_wrap(~ bedrooms)
 
 ```
+
 #Wykres przedstawia rozrzut cen mieszkań w zależności od liczby sypialni, gdzie każda kategoria ma swój osobny panel. Każdy punkt oznacza pojedyncze mieszkanie, a zastosowanie funkcji jitter pozwala na lepszą czytelność poprzez lekkie przesunięcie nakładających się wartości. Na osi pionowej widoczne są ceny nieruchomości, które różnią się w zależności od liczby pokoi.
 
 #Największa liczba mieszkań występuje w przedziale od dwóch do czterech sypialni, co sugeruje, że są to najpopularniejsze układy. Ceny generalnie rosną wraz ze wzrostem liczby pokoi, choć widać duże różnice w poszczególnych kategoriach. Mieszkania jednopokojowe oraz te z sześcioma sypialniami występują najrzadziej, a ich ceny są dość rozproszone. W przypadku nieruchomości cztero- i pięciopokojowych obserwujemy największy rozrzut cen, co może sugerować istnienie zarówno standardowych mieszkań, jak i luksusowych apartamentów w tej grupie.
 
 #Niektóre wartości odstające wskazują na wyjątkowo drogie nieruchomości w każdej kategorii. Mimo że liczba sypialni ma wyraźny wpływ na cenę, inne czynniki, takie jak lokalizacja czy standard wykończenia, również mogą odgrywać istotną rolę. Warto zwrócić uwagę na mieszkania z sześcioma sypialniami, które choć nieliczne, mogą mieć niestandardowy zakres cenowy.
+
 ```{r}
 # Porównanie średniej, mediany i kwantyli dla cen
 
@@ -638,6 +619,7 @@ mean(data_imputed$price)
     quantile(data_imputed$price,probs=c(0,0.1,0.25,0.5,0.75,0.95,1),na.rm=TRUE)
     
 ```
+
 #Średnia cena mieszkań wynosi 4 791 659, natomiast mediana, czyli wartość środkowa zbioru, jest nieco niższa i wynosi 4 340 000. Odchylenie standardowe, które mierzy rozproszenie danych wokół średniej, wynosi 1 887 452, a wariancja, będąca kwadratem odchylenia standardowego, osiąga wartość 3,56 × 10¹². Wskaźnik zmienności, określający względne zróżnicowanie cen, wynosi 39,39%, co wskazuje na umiarkowane zróżnicowanie cen mieszkań w zbiorze.
 
 #Różnica między trzecim a pierwszym kwartylem, czyli rozstęp międzykwartylowy, wynosi 2 310 000. Połowa wartości znajduje się w przedziale od 3 493 000 do 5 803 000. Średnie odchylenie międzykwartylowe wynosi 1 155 000, a wskaźnik zmienności oparty na rozstępie międzykwartylowym to 26,61%, co sugeruje mniejsze zróżnicowanie cen w środkowym zakresie danych.
@@ -658,6 +640,7 @@ inline_plot <- data.frame(rooms = c(1, 2, 3, 4, 5, 6), boxplot = "", histogram =
   column_spec(6, image = spec_plot(data_imputed_list, type = "p"))
 
 ```
+
 #Obraz przedstawia tabelę zawierającą różne wizualizacje rozkładu cen mieszkań w zależności od liczby pokoi. W pierwszej kolumnie oznaczone są liczby pokoi od 1 do 6. W kolejnych kolumnach znajdują się wykresy pudełkowe pokazujące medianę, kwartyle i wartości odstające dla każdej grupy, histogramy przedstawiające rozkład cen w danej kategorii, a także różne warianty wykresów liniowych i punktowych.
 
 #Wykresy pudełkowe ujawniają rozrzut cen w każdej grupie i potencjalne wartości odstające. Histogramy pozwalają ocenić symetrię oraz ewentualne skośności rozkładu. Wykresy liniowe mogą sugerować trendy w rozkładzie cen w poszczególnych grupach, a wykresy punktowe obrazują indywidualne obserwacje. Tego typu zestawienie pomaga w analizie, jak zmienia się rozkład cen w zależności od liczby pokoi, umożliwiając porównanie różnych grup na jednym, czytelnym wykresie.
@@ -676,9 +659,11 @@ inline_plot <- data.frame(hotwaterheating = c(TRUE, FALSE), boxplot = "", histog
   column_spec(6, image = spec_plot(mieszkania_list, type = "p"))
 
 ```
+
 #Obraz przedstawia tabelę z wykresami ilustrującymi rozkład cen mieszkań w zależności od dostępności ogrzewania wody. Dane zostały podzielone na dwie grupy: mieszkania z ogrzewaniem wody (TRUE) oraz bez niego (FALSE). W pierwszej kolumnie znajduje się informacja o dostępności tej cechy, a kolejne kolumny zawierają różne wizualizacje rozkładu cen.
 
 #Wykresy pudełkowe pokazują medianę, kwartyle i wartości odstające dla każdej grupy, histogramy przedstawiają kształt rozkładu cen, natomiast wykresy liniowe i punktowe umożliwiają analizę trendów i rozrzutu danych. Dzięki tej tabeli można łatwo porównać, jak obecność ogrzewania wody wpływa na ceny mieszkań i czy w obu grupach występują istotne różnice w ich rozkładzie.
+
 ```{r kable_report2, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 raport <-
   list("Cena" =
@@ -699,11 +684,6 @@ raport <-
 tabela<-summary_table(data_imputed, summaries = raport, by = data_imputed$bedrooms)
 tabela
 
-knitr::kable(tabela,
-  digits = 2,
-  align = "lcccc",
-  caption="Tabela. Ceny mieszkań wg liczby pokoi.",
-  col.names = c("Statystyka","1 pokój", "2 pokoje", "3 pokoje", "4 pokoje", "5 pokoi")) 
 
 ```
 
@@ -726,7 +706,23 @@ data_imputed %>%
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2))
 ```
 
-Wizualizacja danych 1. Mapowanie danych (wykresy) Na przykładzie zależności między ceną (price) a powierzchnią (area).
+#Tabela przedstawia rozkład cen mieszkań w zależności od liczby pokoi. Dla każdej grupy liczbowej podana jest liczba obserwacji, średnia cena, odchylenie standardowe, mediana wraz z pierwszym i trzecim kwartylem oraz wartości minimalne i maksymalne. Test Kruskala-Wallisa wykazał istotną statystycznie różnicę pomiędzy grupami pod względem ceny mieszkań (p \< 0.001). Widać, że średnia cena rośnie wraz ze wzrostem liczby pokoi – od około 2,7 mln dla mieszkań jednopokojowych do ponad 6,2 mln dla mieszkań pięciopokojowych. Rozstęp wartości maksymalnych i minimalnych również się zwiększa, co wskazuje na większe zróżnicowanie cen w większych mieszkaniach. #Wizualizacja danych 1. Mapowanie danych (wykresy) Na przykładzie zależności między ceną (price) a powierzchnią (area).
+
+###Podsumowanie analizy opisowej danych
+
+#Przeprowadzona analiza opisowa danych dostarczyła szczegółowego obrazu rynku nieruchomości, uwzględniając kluczowe statystyki i ich interpretację. Wyniki analizy wskazują na istotne zależności między zmiennymi, które wpływają na ceny mieszkań oraz ich rozkład w różnych grupach.
+
+#Średnia cena nieruchomości wynosi około 4,79 mln, natomiast mediana, która jest mniej podatna na wartości odstające, kształtuje się na poziomie 4,34 mln. Rozstęp wartości wskazuje na duże zróżnicowanie cen – minimalna wartość wynosi 1,75 mln, podczas gdy maksymalna osiąga 12,25 mln. Odchylenie standardowe wynoszące 1,89 mln wskazuje na znaczne rozproszenie danych, co potwierdza również współczynnik zmienności na poziomie 39%.
+
+#Analiza kwartylowa wykazała, że 25% mieszkań kosztuje mniej niż 3,49 mln, natomiast 75% nie przekracza 5,8 mln, co sugeruje, że większość mieszkań mieści się w tym przedziale cenowym. Wskaźnik IQR potwierdza, że środkowa połowa obserwacji charakteryzuje się stosunkowo dużą zmiennością cen.
+
+#Zróżnicowanie cen w zależności od liczby pokoi ukazuje wyraźną tendencję wzrostową – średnie ceny rosną wraz z większą liczbą sypialni. Najtańsze mieszkania jedno- i dwupokojowe mają znacznie niższą medianę niż większe nieruchomości. Dodatkowo, test Kruskala-Wallisa wykazał istotne statystycznie różnice pomiędzy grupami liczby pokoi pod względem ceny.
+
+#Podział cen według statusu umeblowania wykazał pewne różnice między grupami. Mieszkania umeblowane osiągają wyższe ceny w porównaniu do nieumeblowanych i częściowo umeblowanych, co sugeruje, że gotowość do zamieszkania jest istotnym czynnikiem wpływającym na wartość nieruchomości.
+
+#Dodatkowa analiza uwzględniająca sposób ogrzewania wody pokazała, że mieszkania z tą instalacją mogą osiągać wyższe ceny, choć różnice te wymagają dalszej interpretacji. Wizualizacje danych w postaci wykresów pudełkowych, histogramów oraz wykresów punktowych pomogły w identyfikacji wartości odstających oraz ogólnych trendów.
+
+#Podsumowując, analiza opisowa dostarczyła cennych informacji na temat struktury cen nieruchomości oraz ich zależności od kluczowych cech. Wyniki te mogą być przydatne dla inwestorów i analityków rynku nieruchomości w celu lepszego zrozumienia dynamiki cenowej i podejmowania bardziej świadomych decyzji.
 
 ```{r}
 # Wykres rozrzutu z ceną na osi Y i powierzchnią na osi X
