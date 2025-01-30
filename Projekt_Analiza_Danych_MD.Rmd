@@ -4,7 +4,7 @@ output:
   pdf_document: default
   html_document: default
 date: "2024-12-08"
---- 
+---
 
 ---
 title: "Projekt Analiza Danych"
@@ -432,12 +432,12 @@ View(klasy)
 
 
 ```
+
 Najwięcej mieszkań znajduje się w przedziale 2.750.000-3.750.000 zł oraz 3.750.000-4.750.000 zł, co sugeruje, że większość ofert dotyczy mieszkań o średnim poziomie cenowym w badanym zbiorze.
 
 Obserwujemy również, że liczba mieszkań maleje wraz ze wzrostem ceny – nieruchomości powyżej 10 milionów złotych stanowią niewielką część rynku. Jest to zgodne z intuicją, ponieważ luksusowe apartamenty są mniej liczne niż standardowe mieszkania.
 
-Obliczenie częstości względnych i skumulowanych pozwala lepiej zrozumieć strukturę cen. Możemy określić, jaki procent mieszkań mieści się w określonych przedziałach, co ułatwia interpretację dostępności mieszkań w różnych segmentach cenowych.
-#### Podstawowe wykresy
+Obliczenie częstości względnych i skumulowanych pozwala lepiej zrozumieć strukturę cen. Możemy określić, jaki procent mieszkań mieści się w określonych przedziałach, co ułatwia interpretację dostępności mieszkań w różnych segmentach cenowych. \#### Podstawowe wykresy
 
 #### Histogram
 
@@ -475,6 +475,7 @@ Na załączonym wykresie widzimy, że rozkład cen mieszkań jest prawostronnie 
 Najwięcej mieszkań znajduje się w przedziale około 3-5 mln zł, co jest zgodne z wcześniejszymi wynikami analizy tabeli częstości. Zauważamy również długi ogon rozkładu, wskazujący na obecność drogich nieruchomości, których ceny przekraczają 10 milionów złotych.
 
 #### Tabela przedziałów cenowych
+
 Tworzymy tabelę przedziałów cenowych z użyciem metody podziału na stałe klasy cenowe, co pozwala na czytelne przedstawienie częstości występowania mieszkań w określonych przedziałach.
 
 ```{r}
@@ -488,13 +489,12 @@ print(price_range)
 jenks.tests(tab1)
 
 ```
-Obliczamy wskaźnik dokładności tabeli (TAI), który informuje nas, jak dobrze wybrane przedziały odzwierciedlają rzeczywisty rozkład danych. 
 
+Obliczamy wskaźnik dokładności tabeli (TAI), który informuje nas, jak dobrze wybrane przedziały odzwierciedlają rzeczywisty rozkład danych.
 
 Wskaźnik TAI jest dość wysoki. 0,84 oznacza, że możemy zaakceptować zaproponowaną konstrukcję tablicy częstości, czyli możemy uznać ten podział za reprezentatywny dla zbioru danych.
 
-Dodatkowo, wartość Goodness of Fit = 0,978 sugeruje, że klasyfikacja danych według wybranej metody pozwala na bardzo dobre odwzorowanie rzeczywistego rozkładu cen. Oznacza to, że analizowane przedziały cenowe są sensowne i dobrze opisują strukturę rynku mieszkań.
-#### Analiza skumulowanego rozkładu cen mieszkań z wykorzystaniem ECDF.
+Dodatkowo, wartość Goodness of Fit = 0,978 sugeruje, że klasyfikacja danych według wybranej metody pozwala na bardzo dobre odwzorowanie rzeczywistego rozkładu cen. Oznacza to, że analizowane przedziały cenowe są sensowne i dobrze opisują strukturę rynku mieszkań. \#### Analiza skumulowanego rozkładu cen mieszkań z wykorzystaniem ECDF.
 
 ```{r}
 tab1<-classIntervals(data_imputed$price,n=10,style="fixed",fixedBreaks=seq(1750000,12250000,by=1000000))
@@ -992,14 +992,10 @@ ggbetweenstats(
 
 ) 
 ```
-W celu określenia istotności różnic zastosujemy test ANOVA Welch’a, który wykazał statystycznie istotne różnice między grupami: F(2, 311.55) = 20.76, p = 3.44e-09 (p < 0.05), co wskazuje, że status umeblowania ma znaczący wpływ na cenę nieruchomości.Wielkość efektu (ω²) wynosi 0.11, co sugeruje umiarkowany wpływ umeblowania na cenę.Test post-hoc Games-Howell wykazał istotne różnice pomiędzy wszystkimi grupami:
-Umeblowane vs. Częściowo umeblowane: p = 0.03
-Umeblowane vs. Nieumeblowane: p = 4.73e-08
-Częściowo umeblowane vs. Nieumeblowane: p = 1.1e-06
-Wszystkie wartości p są poniżej progu istotności 0.05, co potwierdza, że różnice w cenach między kategoriami nie są przypadkowe.
+
+W celu określenia istotności różnic zastosujemy test ANOVA Welch’a, który wykazał statystycznie istotne różnice między grupami: F(2, 311.55) = 20.76, p = 3.44e-09 (p \< 0.05), co wskazuje, że status umeblowania ma znaczący wpływ na cenę nieruchomości.Wielkość efektu (ω²) wynosi 0.11, co sugeruje umiarkowany wpływ umeblowania na cenę.Test post-hoc Games-Howell wykazał istotne różnice pomiędzy wszystkimi grupami: Umeblowane vs. Częściowo umeblowane: p = 0.03 Umeblowane vs. Nieumeblowane: p = 4.73e-08 Częściowo umeblowane vs. Nieumeblowane: p = 1.1e-06 Wszystkie wartości p są poniżej progu istotności 0.05, co potwierdza, że różnice w cenach między kategoriami nie są przypadkowe.
 
 Analiza wykazała, że status umeblowania ma istotny wpływ na cenę nieruchomości. Wyniki sugerują, że umeblowane nieruchomości są średnio o około 32% droższe od nieumeblowanych. Inwestowanie w umeblowanie może być strategią zwiększającą wartość nieruchomości na rynku. W dalszych badaniach warto uwzględnić inne zmienne, takie jak lokalizacja, wiek budynku czy standard wykończenia, aby uzyskać pełniejszy obraz czynników wpływających na cenę nieruchomości.
-
 
 ##Analiza zależności między zmiennymi (price vs area)
 
@@ -1015,7 +1011,8 @@ ggscatterstats(
   title = "Korelacja między powierzchnią a ceną nieruchomości" 
 )
 ```
-Analiza przedstawia korelację między powierzchnią (area) a ceną (price) nieruchomości. Współczynnik korelacji Pearsona wynosi 𝑟^Pearson=0.22r^Pearson =0.22 z przedziałem ufności 95% [0.14, 0.30]. Oznacza to istnienie słabej, ale istotnej statystycznie dodatniej korelacji między powierzchnią a ceną nieruchomości. Test istotności korelacji wykazał t(543) = 5.36, p = 1.22e-07, co oznacza, że prawdopodobieństwo uzyskania takiego wyniku przy braku rzeczywistej zależności jest bardzo małe (p < 0.05). Dodatkowo analiza Bayesowska wskazuje na logarytm Bayes Factor log₁₀(BF₁₀) = -11.22, co sugeruje silne wsparcie dla istnienia tej korelacji.
+
+Analiza przedstawia korelację między powierzchnią (area) a ceną (price) nieruchomości. Współczynnik korelacji Pearsona wynosi 𝑟^Pearson=0.22r^Pearson =0.22 z przedziałem ufności 95% [0.14, 0.30]. Oznacza to istnienie słabej, ale istotnej statystycznie dodatniej korelacji między powierzchnią a ceną nieruchomości. Test istotności korelacji wykazał t(543) = 5.36, p = 1.22e-07, co oznacza, że prawdopodobieństwo uzyskania takiego wyniku przy braku rzeczywistej zależności jest bardzo małe (p \< 0.05). Dodatkowo analiza Bayesowska wskazuje na logarytm Bayes Factor log₁₀(BF₁₀) = -11.22, co sugeruje silne wsparcie dla istnienia tej korelacji.
 
 Pomimo istotności statystycznej, siła zależności między powierzchnią a ceną nieruchomości jest stosunkowo niewielka (𝑟=0.22 r=0.22), co oznacza, że inne czynniki (np. lokalizacja, standard wykończenia) mogą mieć większy wpływ na cenę. Widzimy jednak, że wraz ze wzrostem powierzchni cena nieruchomości średnio wzrasta, choć rozproszenie danych wskazuje na dużą zmienność cen w zależności od innych zmiennych. Może to sugerować, że kupujący są skłonni płacić więcej za większe nieruchomości, ale nie jest to jedyny czynnik determinujący cenę.
 
@@ -1030,20 +1027,18 @@ ggcorrmat(
 
 ) 
 ```
+
 Macierz korelacji przedstawia zależności między ceną nieruchomości (price) a wybranymi zmiennymi: powierzchnią (area), liczbą sypialni (bedrooms), liczbą łazienek (bathrooms), liczbą pięter (stories) oraz liczbą miejsc parkingowych (parking). Współczynniki korelacji Pearsona wskazują siłę oraz kierunek zależności między zmiennymi. Kolory w macierzy odzwierciedlają siłę korelacji – im ciemniejszy zielony, tym wyższa wartość. Wartości oznaczone "X" są statystycznie nieistotne po korekcie Holm’a, co oznacza, że nie można wykluczyć, że są wynikiem przypadku.
 
 Najsilniejsza korelacja z ceną występuje dla liczby łazienek (r = 0.43) oraz liczby miejsc parkingowych (r = 0.38), co sugeruje, że te czynniki mogą mieć istotny wpływ na wartość nieruchomości.
 
 Powierzchnia (area) ma relatywnie słabą korelację z ceną (r = 0.22), co potwierdza wcześniejsze analizy – inne czynniki mogą mieć większe znaczenie.
 
-Liczba pięter (stories) i liczba sypialni (bedrooms) nie wykazują istotnej korelacji z ceną po korekcie istotności statystycznej (oznaczone "X"), co oznacza, że ich wpływ na cenę może być znikomy.
-Silna dodatnia korelacja między zmiennymi niezależnymi (np. bathrooms i stories – r = 0.41) sugeruje, że większe domy często mają więcej pięter i łazienek, co jest logiczne w kontekście projektowania budynków.
-Wartość r = 0.85 dla liczby miejsc parkingowych (parking) i liczby pięter (stories) wskazuje, że te zmienne są mocno powiązane – większe domy mają więcej pięter i więcej miejsc parkingowych.
-Podsumowując, analiza sugeruje, że na cenę nieruchomości największy wpływ mają liczba łazienek oraz dostępność miejsc parkingowych, natomiast liczba pięter i sypialni nie wykazuje istotnej zależności z ceną po uwzględnieniu korekty wielokrotnych testów.
+Liczba pięter (stories) i liczba sypialni (bedrooms) nie wykazują istotnej korelacji z ceną po korekcie istotności statystycznej (oznaczone "X"), co oznacza, że ich wpływ na cenę może być znikomy. Silna dodatnia korelacja między zmiennymi niezależnymi (np. bathrooms i stories – r = 0.41) sugeruje, że większe domy często mają więcej pięter i łazienek, co jest logiczne w kontekście projektowania budynków. Wartość r = 0.85 dla liczby miejsc parkingowych (parking) i liczby pięter (stories) wskazuje, że te zmienne są mocno powiązane – większe domy mają więcej pięter i więcej miejsc parkingowych. Podsumowując, analiza sugeruje, że na cenę nieruchomości największy wpływ mają liczba łazienek oraz dostępność miejsc parkingowych, natomiast liczba pięter i sypialni nie wykazuje istotnej zależności z ceną po uwzględnieniu korekty wielokrotnych testów.
 
 ##Wizualizacja proporcji zmiennej kategorycznej (furnishingstatus)
 
-Celem tej sekcji jest identyfikacja zmiennych silnie skorelowanych, co może pomóc w modelowaniu predykcyjnym cen nieruchomości. 
+Celem tej sekcji jest identyfikacja zmiennych silnie skorelowanych, co może pomóc w modelowaniu predykcyjnym cen nieruchomości.
 
 ```{r}
 ggpiestats( 
@@ -1056,14 +1051,30 @@ ggpiestats(
 
 ) 
 ```
+
 Wykres kołowy przedstawia proporcje statusu umeblowania nieruchomości w analizowanej próbie (n = 545). Podział wygląda następująco:
 
-42% nieruchomości jest częściowo umeblowanych (semi-furnished)
-33% nieruchomości jest nieumeblowanych (unfurnished)
-26% nieruchomości jest w pełni umeblowanych (furnished)
+42% nieruchomości jest częściowo umeblowanych (semi-furnished) 33% nieruchomości jest nieumeblowanych (unfurnished) 26% nieruchomości jest w pełni umeblowanych (furnished)
 
 Największy odsetek nieruchomości stanowią te częściowo umeblowane (42%), co sugeruje, że jest to najczęściej wybierana opcja na rynku. Nieruchomości w pełni umeblowane stanowią jedynie 26%, co może oznaczać, że kupujący częściej decydują się na samodzielne umeblowanie lub wynajem w stanie częściowym. Nieumeblowane nieruchomości (33%) również stanowią dużą część rynku, co może wynikać z preferencji nabywców do aranżacji wnętrza według własnych potrzeb lub ograniczeń budżetowych.
 
 ### Podsumowanie i wnioski końcowe
 
+Celem przeprowadzonej analizy było zidentyfikowanie czynników mających wpływ na ceny nieruchomości oraz ich wizualizacja. Skoncentrowano się na kluczowych aspektach ekonomicznych i statystycznych, które pozwoliły lepiej zrozumieć mechanizmy kształtujące wartość mieszkań i domów.
 
+Czynniki ekonomiczne
+Analiza wykazała, że jednym z najważniejszych elementów wpływających na cenę nieruchomości jest jej metraż. Większe mieszkania i domy zazwyczaj osiągają wyższe ceny, co jest zgodne z podstawowymi zasadami funkcjonowania rynku nieruchomości. Istotną rolę odgrywa również umeblowanie – nieruchomości sprzedawane z wyposażeniem są przeciętnie droższe od tych, które są nieumeblowane.
+
+Kolejnym ważnym aspektem okazała się obecność klimatyzacji oraz lokalizacja względem głównych dróg – obie te cechy przyczyniają się do wzrostu wartości nieruchomości. Dodatkowo, infrastruktura towarzysząca, taka jak piwnica, miejsce parkingowe czy system ogrzewania wodnego, również ma znaczący wpływ na końcową cenę.
+
+Z analizy wynika także, że rynek nieruchomości jest silnie zróżnicowany pod względem cenowym. Lokalizacja oraz dodatkowe udogodnienia mogą prowadzić do dużych rozbieżności w wartościach podobnych metrażowo nieruchomości. Co więcej, analiza wykazała, że liczba pięter budynku może być istotnym czynnikiem wpływającym na wartość nieruchomości, co może mieć znaczenie zarówno dla inwestorów, jak i osób prywatnych planujących zakup mieszkania.
+
+Podejście statystyczne
+Od strony statystycznej analiza rozpoczęła się od weryfikacji kompletności danych. Występowanie brakujących wartości mogło wpłynąć na końcowe wyniki, dlatego przeprowadzono wizualizację tych braków oraz tam, gdzie było to konieczne, zastosowano odpowiednie metody imputacji.
+
+Do eksploracji danych wykorzystano różne techniki wizualizacyjne. Wykresy punktowe pozwoliły na przedstawienie relacji między metrażem a ceną nieruchomości, natomiast wykresy słupkowe pokazały, jak zmieniają się ceny w zależności od liczby pięter i umeblowania. Dodatkowo, użycie wykresów typu boxplot ułatwiło porównanie cen nieruchomości w zależności od cech takich jak klimatyzacja, piwnica czy pokój gościnny, co pozwoliło na precyzyjniejszą interpretację danych. Histogramy natomiast ukazały rozkład cen oraz ich zależność od lokalizacji względem głównych dróg.
+
+Na potrzeby analizy dokonano także przekształcenia wybranych zmiennych. Czynniki takie jak umeblowanie czy klimatyzacja zostały zaklasyfikowane jako zmienne kategoryczne, co ułatwiło dalsze wnioskowanie. Wykonano również analizę korelacji pomiędzy zmiennymi, aby określić, w jakim stopniu poszczególne cechy nieruchomości wpływają na ich cenę.
+
+Najważniejsze wnioski
+Wyniki analizy potwierdziły, że powierzchnia nieruchomości ma kluczowe znaczenie dla jej wartości – im większy metraż, tym wyższa cena. Dodatkowe udogodnienia, takie jak piwnica, parking czy klimatyzacja, również zwiększają wartość nieruchomości, natomiast umeblowanie nie wykazało istotnego wpływu na cenę, co może sugerować, że nie jest to główny czynnik brany pod uwagę przez kupujących.
