@@ -598,6 +598,33 @@ raport <-
             "Kurtoza"=~round(kurtosi(data_imputed$price),2)
             ))
 tabela<-summary_table(data_imputed, summaries = raport, by = data_imputed$bedrooms)
+tabela
+
+knitr::kable(tabela,
+  digits = 2,
+  align = "lcccc",
+  caption="Tabela. Ceny mieszkań wg liczby pokoi.",
+  col.names = c("Statystyka","1 pokój", "2 pokoje", "3 pokoje", "4 pokoje", "5 pokoi")) 
+
+```
+```{r}
+install.packages(gtsummary)
+library(gtsummary)
+data_imputed %>%
+  select(data_imputed$price,data_imputed$bedrooms) %>%
+  tbl_summary(
+    by=bedrooms,
+    type = all_continuous() ~ "continuous2",
+    statistic = all_continuous() ~ c(
+      "{N_nonmiss}","{mean}","{sd}",
+      "{median} ({p25}, {p75})",
+      "{min}, {max}"),
+    missing = "no",
+    label = data_imputed$price ~ "Cena") %>%
+  modify_header(label ~ "**Zmienna**") %>%
+  modify_caption("**Tabela 1. Rozkład cen wg liczby pokoi**") %>%
+  bold_labels() %>% 
+  add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2))
 
 ```
 
