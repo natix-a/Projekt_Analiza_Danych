@@ -586,7 +586,27 @@ ggplot(data_imputed, aes(x=furnishingstatus, y=price)) +
     facet_grid(~furnishingstatus) +
     scale_fill_brewer(palette="Set1")
 ```
+#Wykres pudełkowy cen mieszkań według statusu umeblowania
+#Wykres przedstawia rozkład cen mieszkań dla trzech kategorii umeblowania: umeblowane (furnished), częściowo umeblowane (semi-furnished) i nieumeblowane (unfurnished).
 
+#Elementy wykresu
+
+#Pudełka pokazują rozstęp międzykwartylowy (IQR) – czyli obszar między 25. a 75. percentylem cen mieszkań.
+#Wąsy wskazują rozpiętość cen bez wartości odstających.
+#Czarne kropki reprezentują indywidualne obserwacje (każde mieszkanie jako punkt).
+#Czerwone punkty oznaczają średnie wartości cen dla każdej kategorii umeblowania.
+#Funkcja jitter rozrzuca kropki poziomo, aby uniknąć ich nakładania.
+#Interpretacja wyników
+
+#Mediany cen (środkowe linie pudełek) sugerują, że umeblowane mieszkania są najdroższe, a nieumeblowane mają najniższą medianę ceny.
+#Rozkład cen jest zróżnicowany, zwłaszcza dla mieszkań umeblowanych, które mają szerszy przedział cenowy.
+#Wartości odstające (punkty powyżej górnych wąsów) wskazują na istnienie luksusowych, bardzo drogich mieszkań we wszystkich trzech kategoriach.
+#Średnia cena (czerwony punkt) dla mieszkań umeblowanych jest wyraźnie wyższa niż dla pozostałych kategorii.
+#Wnioski
+
+#Mieszkania umeblowane są droższe, ale ich ceny są bardziej zróżnicowane.
+#Ceny mieszkań częściowo umeblowanych i nieumeblowanych są bardziej skupione wokół mediany, co sugeruje mniejsze różnice między najtańszymi i najdroższymi ofertami.
+#Istnieją mieszkania o ekstremalnie wysokich cenach, które mogą wpływać na średnią wartość w każdej kategorii.
 ```{r facet1, echo=FALSE}
 ## Grupowanie wykresów według liczby pokoi
 plot1 <- ggplot(data_imputed, aes(x=bedrooms, price)) + 
@@ -595,7 +615,11 @@ plot1 <- ggplot(data_imputed, aes(x=bedrooms, price)) +
 plot1 + facet_wrap(~ bedrooms)
 
 ```
+#Wykres przedstawia rozrzut cen mieszkań w zależności od liczby sypialni, gdzie każda kategoria ma swój osobny panel. Każdy punkt oznacza pojedyncze mieszkanie, a zastosowanie funkcji jitter pozwala na lepszą czytelność poprzez lekkie przesunięcie nakładających się wartości. Na osi pionowej widoczne są ceny nieruchomości, które różnią się w zależności od liczby pokoi.
 
+#Największa liczba mieszkań występuje w przedziale od dwóch do czterech sypialni, co sugeruje, że są to najpopularniejsze układy. Ceny generalnie rosną wraz ze wzrostem liczby pokoi, choć widać duże różnice w poszczególnych kategoriach. Mieszkania jednopokojowe oraz te z sześcioma sypialniami występują najrzadziej, a ich ceny są dość rozproszone. W przypadku nieruchomości cztero- i pięciopokojowych obserwujemy największy rozrzut cen, co może sugerować istnienie zarówno standardowych mieszkań, jak i luksusowych apartamentów w tej grupie.
+
+#Niektóre wartości odstające wskazują na wyjątkowo drogie nieruchomości w każdej kategorii. Mimo że liczba sypialni ma wyraźny wpływ na cenę, inne czynniki, takie jak lokalizacja czy standard wykończenia, również mogą odgrywać istotną rolę. Warto zwrócić uwagę na mieszkania z sześcioma sypialniami, które choć nieliczne, mogą mieć niestandardowy zakres cenowy.
 ```{r}
 # Porównanie średniej, mediany i kwantyli dla cen
 
@@ -614,6 +638,11 @@ mean(data_imputed$price)
     quantile(data_imputed$price,probs=c(0,0.1,0.25,0.5,0.75,0.95,1),na.rm=TRUE)
     
 ```
+#Średnia cena mieszkań wynosi 4 791 659, natomiast mediana, czyli wartość środkowa zbioru, jest nieco niższa i wynosi 4 340 000. Odchylenie standardowe, które mierzy rozproszenie danych wokół średniej, wynosi 1 887 452, a wariancja, będąca kwadratem odchylenia standardowego, osiąga wartość 3,56 × 10¹². Wskaźnik zmienności, określający względne zróżnicowanie cen, wynosi 39,39%, co wskazuje na umiarkowane zróżnicowanie cen mieszkań w zbiorze.
+
+#Różnica między trzecim a pierwszym kwartylem, czyli rozstęp międzykwartylowy, wynosi 2 310 000. Połowa wartości znajduje się w przedziale od 3 493 000 do 5 803 000. Średnie odchylenie międzykwartylowe wynosi 1 155 000, a wskaźnik zmienności oparty na rozstępie międzykwartylowym to 26,61%, co sugeruje mniejsze zróżnicowanie cen w środkowym zakresie danych.
+
+#Minimalna cena mieszkania wynosi 1 750 000, a maksymalna 12 250 000. Kwartyle wskazują, że 10% najtańszych mieszkań ma ceny poniżej 2 870 000, a 10% najdroższych przekracza 8 400 000. Środkowe 50% mieszkań znajduje się w przedziale od 3 493 000 do 5 803 000, co daje lepszy obraz dominujących cen na rynku.
 
 ```{r kable_report, echo=FALSE}
 #Tworzenie tabeli z wykresami dla różnych liczby pokoi
@@ -629,6 +658,9 @@ inline_plot <- data.frame(rooms = c(1, 2, 3, 4, 5, 6), boxplot = "", histogram =
   column_spec(6, image = spec_plot(data_imputed_list, type = "p"))
 
 ```
+#Obraz przedstawia tabelę zawierającą różne wizualizacje rozkładu cen mieszkań w zależności od liczby pokoi. W pierwszej kolumnie oznaczone są liczby pokoi od 1 do 6. W kolejnych kolumnach znajdują się wykresy pudełkowe pokazujące medianę, kwartyle i wartości odstające dla każdej grupy, histogramy przedstawiające rozkład cen w danej kategorii, a także różne warianty wykresów liniowych i punktowych.
+
+#Wykresy pudełkowe ujawniają rozrzut cen w każdej grupie i potencjalne wartości odstające. Histogramy pozwalają ocenić symetrię oraz ewentualne skośności rozkładu. Wykresy liniowe mogą sugerować trendy w rozkładzie cen w poszczególnych grupach, a wykresy punktowe obrazują indywidualne obserwacje. Tego typu zestawienie pomaga w analizie, jak zmienia się rozkład cen w zależności od liczby pokoi, umożliwiając porównanie różnych grup na jednym, czytelnym wykresie.
 
 ```{r kable_report, echo=FALSE}
 # Tworzenie tabeli z wykresami według ogrzewania wody
@@ -644,7 +676,9 @@ inline_plot <- data.frame(hotwaterheating = c(TRUE, FALSE), boxplot = "", histog
   column_spec(6, image = spec_plot(mieszkania_list, type = "p"))
 
 ```
+#Obraz przedstawia tabelę z wykresami ilustrującymi rozkład cen mieszkań w zależności od dostępności ogrzewania wody. Dane zostały podzielone na dwie grupy: mieszkania z ogrzewaniem wody (TRUE) oraz bez niego (FALSE). W pierwszej kolumnie znajduje się informacja o dostępności tej cechy, a kolejne kolumny zawierają różne wizualizacje rozkładu cen.
 
+#Wykresy pudełkowe pokazują medianę, kwartyle i wartości odstające dla każdej grupy, histogramy przedstawiają kształt rozkładu cen, natomiast wykresy liniowe i punktowe umożliwiają analizę trendów i rozrzutu danych. Dzięki tej tabeli można łatwo porównać, jak obecność ogrzewania wody wpływa na ceny mieszkań i czy w obu grupach występują istotne różnice w ich rozkładzie.
 ```{r kable_report2, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 raport <-
   list("Cena" =
