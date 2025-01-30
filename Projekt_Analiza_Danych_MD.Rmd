@@ -1,9 +1,9 @@
 ---
-
 title: "Untitled"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: "2024-12-08"
- 
 --- 
 
 ---
@@ -1065,3 +1065,5 @@ Wykres kołowy przedstawia proporcje statusu umeblowania nieruchomości w analiz
 Największy odsetek nieruchomości stanowią te częściowo umeblowane (42%), co sugeruje, że jest to najczęściej wybierana opcja na rynku. Nieruchomości w pełni umeblowane stanowią jedynie 26%, co może oznaczać, że kupujący częściej decydują się na samodzielne umeblowanie lub wynajem w stanie częściowym. Nieumeblowane nieruchomości (33%) również stanowią dużą część rynku, co może wynikać z preferencji nabywców do aranżacji wnętrza według własnych potrzeb lub ograniczeń budżetowych.
 
 ### Podsumowanie i wnioski końcowe
+
+
