@@ -1,8 +1,8 @@
 ---
 title: "Untitled"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 date: "2024-12-08"
 ---
 
@@ -36,13 +36,6 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 
 ```{r}
-install.packages("rmarkdown")
-install.packages("rmdformats")
-install.packages("gtsummary")
-install.packages("qwraps2")
-install.packages("psych")
-install.packages("kableExtra")
-install.packages("ggstatsplot")
 library(dplyr)
 library(naniar)
 library(ggplot2)
