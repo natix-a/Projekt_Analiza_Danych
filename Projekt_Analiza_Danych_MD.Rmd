@@ -20,10 +20,6 @@ GitGirls
 
 W składzie: 1. Natalia Adamczyk 2. Paulina Lackowska 3. Wiktoria Gliniecka
 
-Baza danych: Agencja nieruchomości - raport na temat agencji nieruchomości, dowiedzieć się od czego zależy CENA nieruchomości, czyli domy, mieszkania.
-
-Plik: agencja_nieruchomosci
-
 ## Wstęp do projektu
 
 W ramach niniejszego projektu przeprowadzono kompleksową analizę danych dotyczących rynku nieruchomości, wykorzystując zaawansowane techniki **Data Wranglingu**, **wizualizacji danych** oraz **analizy opisowej**. Celem projektu było zrozumienie kluczowych czynników wpływających na wartość i atrakcyjność nieruchomości, a także identyfikacja trendów i zależności występujących w analizowanym zbiorze danych.
@@ -1062,19 +1058,16 @@ Największy odsetek nieruchomości stanowią te częściowo umeblowane (42%), co
 
 Celem przeprowadzonej analizy było zidentyfikowanie czynników mających wpływ na ceny nieruchomości oraz ich wizualizacja. Skoncentrowano się na kluczowych aspektach ekonomicznych i statystycznych, które pozwoliły lepiej zrozumieć mechanizmy kształtujące wartość mieszkań i domów.
 
-Czynniki ekonomiczne
-Analiza wykazała, że jednym z najważniejszych elementów wpływających na cenę nieruchomości jest jej metraż. Większe mieszkania i domy zazwyczaj osiągają wyższe ceny, co jest zgodne z podstawowymi zasadami funkcjonowania rynku nieruchomości. Istotną rolę odgrywa również umeblowanie – nieruchomości sprzedawane z wyposażeniem są przeciętnie droższe od tych, które są nieumeblowane.
+Czynniki ekonomiczne Analiza wykazała, że jednym z najważniejszych elementów wpływających na cenę nieruchomości jest jej metraż. Większe mieszkania i domy zazwyczaj osiągają wyższe ceny, co jest zgodne z podstawowymi zasadami funkcjonowania rynku nieruchomości. Istotną rolę odgrywa również umeblowanie – nieruchomości sprzedawane z wyposażeniem są przeciętnie droższe od tych, które są nieumeblowane.
 
 Kolejnym ważnym aspektem okazała się obecność klimatyzacji oraz lokalizacja względem głównych dróg – obie te cechy przyczyniają się do wzrostu wartości nieruchomości. Dodatkowo, infrastruktura towarzysząca, taka jak piwnica, miejsce parkingowe czy system ogrzewania wodnego, również ma znaczący wpływ na końcową cenę.
 
 Z analizy wynika także, że rynek nieruchomości jest silnie zróżnicowany pod względem cenowym. Lokalizacja oraz dodatkowe udogodnienia mogą prowadzić do dużych rozbieżności w wartościach podobnych metrażowo nieruchomości. Co więcej, analiza wykazała, że liczba pięter budynku może być istotnym czynnikiem wpływającym na wartość nieruchomości, co może mieć znaczenie zarówno dla inwestorów, jak i osób prywatnych planujących zakup mieszkania.
 
-Podejście statystyczne
-Od strony statystycznej analiza rozpoczęła się od weryfikacji kompletności danych. Występowanie brakujących wartości mogło wpłynąć na końcowe wyniki, dlatego przeprowadzono wizualizację tych braków oraz tam, gdzie było to konieczne, zastosowano odpowiednie metody imputacji.
+Podejście statystyczne Od strony statystycznej analiza rozpoczęła się od weryfikacji kompletności danych. Występowanie brakujących wartości mogło wpłynąć na końcowe wyniki, dlatego przeprowadzono wizualizację tych braków oraz tam, gdzie było to konieczne, zastosowano odpowiednie metody imputacji.
 
 Do eksploracji danych wykorzystano różne techniki wizualizacyjne. Wykresy punktowe pozwoliły na przedstawienie relacji między metrażem a ceną nieruchomości, natomiast wykresy słupkowe pokazały, jak zmieniają się ceny w zależności od liczby pięter i umeblowania. Dodatkowo, użycie wykresów typu boxplot ułatwiło porównanie cen nieruchomości w zależności od cech takich jak klimatyzacja, piwnica czy pokój gościnny, co pozwoliło na precyzyjniejszą interpretację danych. Histogramy natomiast ukazały rozkład cen oraz ich zależność od lokalizacji względem głównych dróg.
 
 Na potrzeby analizy dokonano także przekształcenia wybranych zmiennych. Czynniki takie jak umeblowanie czy klimatyzacja zostały zaklasyfikowane jako zmienne kategoryczne, co ułatwiło dalsze wnioskowanie. Wykonano również analizę korelacji pomiędzy zmiennymi, aby określić, w jakim stopniu poszczególne cechy nieruchomości wpływają na ich cenę.
 
-Najważniejsze wnioski
-Wyniki analizy potwierdziły, że powierzchnia nieruchomości ma kluczowe znaczenie dla jej wartości – im większy metraż, tym wyższa cena. Dodatkowe udogodnienia, takie jak piwnica, parking czy klimatyzacja, również zwiększają wartość nieruchomości, natomiast umeblowanie nie wykazało istotnego wpływu na cenę, co może sugerować, że nie jest to główny czynnik brany pod uwagę przez kupujących.
+Najważniejsze wnioski Wyniki analizy potwierdziły, że powierzchnia nieruchomości ma kluczowe znaczenie dla jej wartości – im większy metraż, tym wyższa cena. Dodatkowe udogodnienia, takie jak piwnica, parking czy klimatyzacja, również zwiększają wartość nieruchomości, natomiast umeblowanie nie wykazało istotnego wpływu na cenę, co może sugerować, że nie jest to główny czynnik brany pod uwagę przez kupujących.
